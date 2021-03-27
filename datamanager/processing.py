@@ -31,6 +31,8 @@ def clean_unloc(unloc):
     unloc = filter_rows(unloc, condition=(~unloc.ccode.isna()), reason='missing ccode')
     unloc = filter_rows(unloc, condition=(~unloc.ccode.isin(['XZ'])), reason='undefined ccode XZ')
 
+    unloc.insert(2, 'citycode', unloc.ccode + unloc.loccode)
+
     return unloc
 
 

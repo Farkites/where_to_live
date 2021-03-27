@@ -31,7 +31,7 @@ for file in UNLOC_FILES_ABS:
         raise Exception(f'{os.path.relpath(file)} is missing. Please download from'
                         f' https://unece.org/trade/cefact/UNLOCODE-Download or define location.')
 
-UNLOC_FILE_CLEAN = 'country_city_codes.pickle'
+UNLOC_FILE_CLEAN = 'city_codes.pickle'
 UNLOC_FILE_CLEAN_ABS = joinpath(COMPUTED_DATA_PATH, UNLOC_FILE_CLEAN)
 
 # ISO Country codes
@@ -41,5 +41,5 @@ if not os.path.isfile(CCODE_FILE_ABS):
     raise Exception(f'{os.path.relpath(CCODE_FILE_ABS)} is missing. Please download from'
                     f' https://datahub.io/core/country-list or define location.')
 
-CCODE_FILE_CLEAN_ABS = joinpath(COMPUTED_DATA_PATH, 'ccodes.pickle')
+CCODE_FILE_CLEAN_ABS = joinpath(COMPUTED_DATA_PATH, 'country_codes.pickle')
 
