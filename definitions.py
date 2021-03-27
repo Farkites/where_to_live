@@ -7,7 +7,7 @@ print(f'set base dir to {BASE_PATH}')
 DATAMGR_PATH = joinpath(BASE_PATH, 'datamanager/')
 
 DATA_BASE_PATH = joinpath(BASE_PATH, 'data/')
-RAWDATA_PATH = joinpath(DATA_BASE_PATH, '01_raw_data/')
+RAWDATA_PATH = joinpath(DATA_BASE_PATH, 'raw_data/')
 
 if not os.path.exists(RAWDATA_PATH):
     raise Exception(f'Rawdata path not found. Please create dir and move rawdata there. {os.path.relpath(RAWDATA_PATH)}')
