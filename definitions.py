@@ -18,7 +18,7 @@ if not os.path.exists(COMPUTED_DATA_PATH):
     os.mkdir(COMPUTED_DATA_PATH)
 
 # city codes
-UNLOC_PATH = joinpath(DATA_BASE_PATH, 'unloc/')
+UNLOC_PATH = joinpath(DATA_BASE_PATH, 'country_city_codes/')
 
 UNLOC_FILES_ABS = [
     joinpath(UNLOC_PATH, 'CodeListPart1.csv'),
@@ -31,7 +31,7 @@ for file in UNLOC_FILES_ABS:
         raise Exception(f'{os.path.relpath(file)} is missing. Please download from'
                         f' https://unece.org/trade/cefact/UNLOCODE-Download or define location.')
 
-UNLOC_FILE_CLEAN = 'unloc.pickle'
+UNLOC_FILE_CLEAN = 'country_city_codes.pickle'
 UNLOC_FILE_CLEAN_ABS = joinpath(COMPUTED_DATA_PATH, UNLOC_FILE_CLEAN)
 
 # ISO Country codes

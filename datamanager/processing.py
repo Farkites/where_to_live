@@ -6,7 +6,7 @@ def filter_rows(df, condition, reason):
     :param reason:
     :param df:
     :param condition: boolean, true for row to keep
-    :return: filter unloc df
+    :return: filter country_city_codes df
     """
     n_dropped = (condition == False).sum()
     print(f'\nexcluding {n_dropped} locations ({n_dropped / df.shape[0]:.1%}) due to {reason}')
@@ -57,18 +57,18 @@ def check_ccode_loccode(ccodes, unloc):
 
     unloc_check = pd.DataFrame({
        'ccode': unloc.ccode.unique(),
-        'unloc': 1
+        'country_city_codes': 1
     })
     # print(unloc_check.isna().sum())
     ccode_loccode_check = ccodes.merge(unloc_check, how='outer', on='ccode')
 
     # ccode_loccode_check[ccode_loccode_check.isnull().any(axis=1)]
     # unloc_check[unloc_check.ccode.str.contains('NA')]
-    # unloc[unloc.ccode=='XZ']
+    # country_city_codes[country_city_codes.ccode=='XZ']
     # ccodes[ccodes.cname=='Namibia']
 
     if ccode_loccode_check.isna().sum().sum() != 0:
-        raise Exception('Missmatch between ccodes and unloc. Investigate both files.')
+        raise Exception('Missmatch between ccodes and country_city_codes. Investigate both files.')
     else:
         return 'ok'
 
