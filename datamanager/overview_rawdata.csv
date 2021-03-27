@@ -1,0 +1,3 @@
+﻿id;name;filename;granularity;dims
+1;citytemp;city_temperature_2020.csv;city;AvgTemperature
+2;test;test;test;test
