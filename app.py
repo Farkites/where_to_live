@@ -1,44 +1,168 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
-from pages import index
-from pages import map_page
-from pages import profile
+import plotly.graph_objects as go
+import pandas as pd
+import os
+from dash.dependencies import ClientsideFunction, Input, Output
 
-print(dcc.__version__) # 0.6.0 or above is required
+case_df = pd.read_csv(('../../Project1/data/Case.csv'))
 
-app = dash.Dash()
+nationality_options = ["Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguans", "Argentinean",
+                       "Tunisian", "Turkish", "Tuvaluan", "Ugandan", "Ukrainian", "Uruguayan", "Uzbekistani",
+                       "Venezuelan", "Vietnamese", "Welsh", "Yemenite", "Zambian", "Zimbabwean"]
 
-app.config.suppress_callback_exceptions = True
+nationality_options = [dict(label=nationality, value=nationality) for nationality in nationality_options]
+hover_layout = html.Div([
+    html.H4('Details of a location'),
+    html.Div([
+        html.A("This is the info on hover. TODO: substitute with fig")
+    ],
+        className="hover-details"
+    )
+],
+    className="hover-details-container stack-top"
+)
+
+filters_layout = html.Div([
+    html.H2('Select your filters'),
+    html.Div([
+        html.A('Applied filters:', className='preferencesText'),
+        dcc.Dropdown(
+            placeholder='Select Filters',
+            id='filters_drop',
+            options=nationality_options,
+            clearable=False,
+            className='dropdownMenu',
+            multi=True
+        )
+    ],
+        #className='stack-top'
+    ),
+],
+    id="filters-container",
+    className="stack-top col-2"
+)
+
+info_bar_layout = html.Div([
+    html.H1("Where to live!", className="title"),
+    html.H3("In this dashboard you can indicate your preferences and navigate the map to find the perfect city \
+    for you to live", className="subtitle"),
+    html.Div([
+        html.Div([
+            html.H6("Authors:"),
+            html.P("Mario Rodríguez Ibáñez", className="author_name"),
+            html.P("Diogo Acabado", className="author_name"),
+            html.P("Doris Macean", className="author_name"),
+            html.P("Daniel Philippi", className="author_name"),
+        ]),
+        html.Div([
+            html.H6("Sources:"),
+            html.P("asdfasdfajsdhlkansdfmcaksdfasdfasdf", className="source"),
+            html.P("asdfasdvfasdfasxfqwrfasdfasdfvasd", className="source"),
+            html.P("asdfasdvfasdfasdfasdfvgasdfa", className="source"),
+            html.P("Dasdfasdfasdfasdfsvasdfvasdfasdfva", className="source"),
+        ])
+    ],
+        style={"display": "flex", "align": "right"}
+    ),
+],
+    className="stack-top info_bar row",
+    id="info_bar"
+)
+
+
+print(dcc.__version__)  # 0.6.0 or above is required
+
+app = dash.Dash(__name__, external_stylesheets='')
+
+suppress_callback_exceptions = True
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
-])
+    html.Div([
+        html.Div(id="width", style={'display': 'none'}),  # Just to retrieve the width of the window
+        html.Div(id="height", style={'display': 'none'}),  # Just to retrieve the height of the window
+        html.Div([
+            dcc.Graph(id='map')
+        ],
+            style={'width': '100%', 'height': '100%'},
+            className='background-map-container'
+        )
+    ],
+        style={'display': 'flex'}
+    ),
+    filters_layout,
+    info_bar_layout,
+],
+    id='page-content',
+    style={'position': 'relative'},
+)
 
-# Page 1 callback
-@app.callback(dash.dependencies.Output('page-1-content', 'children'),
-              [dash.dependencies.Input('page-1-dropdown', 'value')])
-def page_1_dropdown(value):
-    return 'You have selected "{}"'.format(value)
 
-# Page 2
-@app.callback(Output('page-2-content', 'children'),
-              [Input('page-2-radios', 'value')])
-def page_2_radios(value):
-    return 'You have selected "{}"'.format(value)
+@app.callback(Output('map', 'figure'),
+              [Input('filters_drop', 'value')],
+              Input('width', 'n_clicks'),
+              Input('height', 'n_clicks'))
+def update_map(filter_list, width, height):
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scattermapbox(
+            lat=case_df.latitude,
+            lon=case_df.longitude,
+            text=case_df.infection_case,
 
-# Index Page callback
-@app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
-def display_page(pathname):
-    if pathname == '/map_page':
-        return map_page.layout
-    elif pathname == '/profile':
-        return profile.layout
-    else:
-        return index.layout
+            mode='markers',
+
+            marker=dict(
+                size=case_df.confirmed * 2,
+                color="rgb(243,203,70)",
+
+                sizemode='area',
+                showscale=False,
+
+            ),
+            showlegend=False
+        )
+    )
+
+    mapbox_token = "pk.eyJ1IjoiZmFya2l0ZXMiLCJhIjoiY2ttaHYwZnQzMGI0cDJvazVubzEzc2lncyJ9.fczsOA4Hfgdf8_bAAZkdYQ"
+    all_plots_layout = dict(
+        mapbox=dict(style="light",
+                    accesstoken=mapbox_token,
+                    ),
+        autosize=False,
+        width=width,
+        height=height,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        geo_bgcolor='rgba(0,0,0,0)',
+
+    )
+    fig.layout = all_plots_layout
+    return fig
+
+
+# Get window size function
+app.clientside_callback(
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='get_window_width'
+    ),
+
+    Output('width', 'n_clicks'),
+    [Input('url', 'href')],
+
+)
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='get_window_height'
+    ),
+    Output('height', 'n_clicks'),
+    [Input('url', 'href')],
+)
 
 
 if __name__ == '__main__':
