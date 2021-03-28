@@ -4,6 +4,7 @@ import dash_html_components as html
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
+import visdcc
 from dash.dependencies import ClientsideFunction, Input, Output
 
 import urllib.request, json
@@ -16,8 +17,6 @@ for feature in data_geo['features']:
 path_datasets = 'https://raw.githubusercontent.com/nalpalhao/DV_Practival/master/datasets/'
 df_emissions = pd.read_csv(path_datasets + 'emissions.csv')
 df_emission_0 = df_emissions.loc[df_emissions['year'] == 2000][['country_name', 'CO2_emissions']]
-
-#case_df = pd.read_csv(('../../Project1/data/Case.csv'))
 
 nationality_options = ["Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguans", "Argentinean",
                        "Tunisian", "Turkish", "Tuvaluan", "Ugandan", "Ukrainian", "Uruguayan", "Uzbekistani",
@@ -88,6 +87,14 @@ selected_country_layout = html.Div([
     id="selected_country",
     style={"display": "none"}
 )
+
+hovered_country_layout = html.Div([
+    html.H4("Insert selected country"),
+],
+    id="hovered_country",
+    style={"display": "none"},
+)
+
 print(dcc.__version__)  # 0.6.0 or above is required
 
 app = dash.Dash(__name__, external_stylesheets='')
@@ -96,11 +103,12 @@ suppress_callback_exceptions = True
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
+
     html.Div([
         html.Div(id="width", style={'display': 'none'}),  # Just to retrieve the width of the window
         html.Div(id="height", style={'display': 'none'}),  # Just to retrieve the height of the window
         html.Div([
-            dcc.Graph(id='map')
+            dcc.Graph(id='map', clear_on_unhover=True, config={'doubleClick': 'reset'})
         ],
             style={'width': '100%', 'height': '100%'},
             className='background-map-container'
@@ -111,6 +119,7 @@ app.layout = html.Div([
     filters_layout,
     info_bar_layout,
     selected_country_layout,
+    hovered_country_layout,
 ],
     id='page-content',
     style={'position': 'relative'},
@@ -163,6 +172,37 @@ def update_selected_country(clickData):
     return style, country_info
 
 
+hovered_country = ""
+
+
+@app.callback(Output('hovered_country', "style"),
+              Output('hovered_country', "children"),
+              [Input('map', 'hoverData')])
+def update_hovered_country(hoverData):
+    global hovered_country
+    location = ""
+    if hoverData is not None:
+        location = hoverData['points'][0]['location']
+        if location != hovered_country:
+            hovered_country = location
+            style = {'display': 'block'}
+        else:
+            hovered_country = ""
+            location = ""
+            style = {'display': 'none'}
+    else:
+        hovered_country = ""
+        location = ""
+        style = {'display': 'none'}
+
+    country_info = html.Div([
+        html.H3(location),
+        html.Canvas(width=300, height=300)
+    ])
+
+    return style, country_info
+
+
 @app.callback(Output('map', 'figure'),
               [Input('filters_drop', 'value')],
               #              [Input('map', 'clickData')],
@@ -185,7 +225,8 @@ def update_map(filter_list, width, height):#clickData
                             locations=df_emission_0['country_name'],
                             z=df_emission_0['CO2_emissions'],
                             zmin=0,
-                            colorscale=[[0, "rgb(255,255,255)"], [1, "rgb(145, 100, 162)"]]
+                            colorscale=[[0, "rgb(255,255,255)"], [1, "rgb(145, 100, 162)"]],
+                            hovertemplate="<extra></extra>"
                             )
     )
     """
@@ -249,6 +290,15 @@ app.clientside_callback(
     ),
     Output('height', 'n_clicks'),
     [Input('url', 'href')],
+)
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='move_hover'
+    ),
+    Output('hovered_country', 'title'),
+    [Input('map', 'hoverData')],
 )
 
 server = app.server

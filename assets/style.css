@@ -267,3 +267,21 @@ button { /* Style of the buttons*/
 #selected_country:hover{
     opacity:1;
 }
+
+#hovered_country{
+    background-color: #333333;
+    padding: 10px;
+    color: #FFFFFF;
+    opacity: 0.8;
+    border-radius: 5px;
+    height: wrap-content;
+    width: wrap-content;
+    position: absolute;
+    z:1000;
+    top: 50%;
+    left: 70%;
+}
+
+#hovered_country h3{
+    margin: 10px;
+}
