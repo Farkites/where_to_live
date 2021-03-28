@@ -158,7 +158,9 @@ button { /* Style of the buttons*/
   top:1%;
   left:1%;
 }
-
+#filters-container:hover{
+    opacity:1;
+}
 #filters-container h2{
     margin: 5px;
 }
@@ -241,4 +243,27 @@ button { /* Style of the buttons*/
     margin: 20;
     position: absolute;
     bottom: 3%;
+}
+
+#info_bar:hover {
+    opacity: 1;
+}
+
+#selected_country{
+    background-color: #333333;
+    padding: 10px;
+    color: #FFFFFF;
+    opacity: 0.6;
+    border-radius: 5px;
+    height: wrap-content;
+    width: wrap-content;
+    position: absolute;
+    top: 2%;
+    left: 70%;
+}
+#selected_country h3{
+    margin: 10px;
+}
+#selected_country:hover{
+    opacity:1;
 }
