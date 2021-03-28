@@ -18,7 +18,7 @@ if not os.path.exists(COMPUTED_DATA_PATH):
     os.mkdir(COMPUTED_DATA_PATH)
 
 # city codes
-UNLOC_PATH = joinpath(DATA_BASE_PATH, 'country_city_codes/')
+UNLOC_PATH = joinpath(RAWDATA_PATH, 'country_city_codes/')
 
 UNLOC_FILES_ABS = [
     joinpath(UNLOC_PATH, 'CodeListPart1.csv'),
@@ -29,7 +29,8 @@ UNLOC_FILES_ABS = [
 for file in UNLOC_FILES_ABS:
     if not os.path.isfile(file):
         raise Exception(f'{os.path.relpath(file)} is missing. Please download from'
-                        f' https://unece.org/trade/cefact/UNLOCODE-Download or define location.')
+                        f' https://unece.org/trade/cefact/UNLOCODE-Download or https://datahub.io/core/un-locode '
+                        f'or define location.')
 
 UNLOC_FILE_CLEAN = 'city_codes.pickle'
 UNLOC_FILE_CLEAN_ABS = joinpath(COMPUTED_DATA_PATH, UNLOC_FILE_CLEAN)
@@ -43,3 +44,9 @@ if not os.path.isfile(CCODE_FILE_ABS):
 
 CCODE_FILE_CLEAN_ABS = joinpath(COMPUTED_DATA_PATH, 'country_codes.pickle')
 
+#
+DIMS_BASE_PATH = joinpath(RAWDATA_PATH, 'dimensions/')
+
+
+# world cities
+WORLD_CITIES_FILE_ABS = joinpath(DIMS_BASE_PATH, 'worldcities_clean.csv')
