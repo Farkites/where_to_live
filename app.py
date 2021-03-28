@@ -4,7 +4,6 @@ import dash_html_components as html
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
-import visdcc
 from dash.dependencies import ClientsideFunction, Input, Output
 
 import urllib.request, json
