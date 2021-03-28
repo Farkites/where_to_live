@@ -17,7 +17,7 @@ path_datasets = 'https://raw.githubusercontent.com/nalpalhao/DV_Practival/master
 df_emissions = pd.read_csv(path_datasets + 'emissions.csv')
 df_emission_0 = df_emissions.loc[df_emissions['year'] == 2000][['country_name', 'CO2_emissions']]
 
-case_df = pd.read_csv(('../../Project1/data/Case.csv'))
+#case_df = pd.read_csv(('../../Project1/data/Case.csv'))
 
 nationality_options = ["Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguans", "Argentinean",
                        "Tunisian", "Turkish", "Tuvaluan", "Ugandan", "Ukrainian", "Uruguayan", "Uzbekistani",
