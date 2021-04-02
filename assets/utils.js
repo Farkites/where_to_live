@@ -28,11 +28,11 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                       (doc && doc.clientTop  || body && body.clientTop  || 0 );
                 }
                 //Use event.PageX ...
-                document.getElementById('hovered_country').style.top = event.pageY+5+"px";
-                document.getElementById('hovered_country').style.left = event.pageX+5+"px";
+                document.getElementById('hovered_location').style.top = event.pageY+5+"px";
+                document.getElementById('hovered_location').style.left = event.pageX+5+"px";
 
             }
-            return "dummy";
+            return "";
         }
     }
 });

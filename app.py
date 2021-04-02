@@ -24,21 +24,34 @@ nationality_options = ["Afghan", "Albanian", "Algerian", "American", "Andorran",
 
 nationality_options = [dict(label=nationality, value=nationality) for nationality in nationality_options]
 
+
+preferences_list = ["high logged gdp per capita","low logged gdp per capita","high social support","low social support",\
+                    "high healthy life expectancy","low healthy life expectancy","high freedom to make life choices",\
+                    "low freedom to make life choices","high generosity","low generosity","high perceptions of corruption",\
+                    "low perceptions of corruption","high cost of living index","low cost of living index",\
+                    "high purchasing power index","low purchasing power index","high safety index","low safety index",\
+                    "high health care index","low health care index","high pollution index","low pollution index",\
+                    "high mcmeal at mcdonalds (or equivalent combo meal)","low mcmeal at mcdonalds (or equivalent combo meal)",\
+                    "high domestic beer (0.5 liter draught)","low domestic beer (0.5 liter draught)",\
+                    "high water (1.5 liter bottle)","low water (1.5 liter bottle)","high cappuccino (regular)",\
+                    "low cappuccino (regular)","high apartment (1 bedroom) in city centre",\
+                    "low apartment (1 bedroom) in city centre","high apartment (1 bedroom) outside of centre",\
+                    "low apartment (1 bedroom) outside of centre",\
+                    "high basic (electricity, heating, cooling, water, garbage) for 85m2 apartment",\
+                    "low basic (electricity, heating, cooling, water, garbage) for 85m2 apartment",\
+                    "high internet (60 mbps or more, unlimited data, cable/adsl)",\
+                    "low internet (60 mbps or more, unlimited data, cable/adsl)",\
+                    "high fitness club, monthly fee for 1 adult","low fitness club, monthly fee for 1 adult",\
+                    "high average monthly net salary (after tax)","low average monthly net salary (after tax)",\
+                    "high avgtemperature","low avgtemperature"]
+filters = [dict(label=parameter, value=parameter) for parameter in preferences_list]
+city_info_bin = pd.read_csv('data_bool_geo.csv')
+
+
 # datasets needed for plots
 data = pd.read_csv('age_group.csv')
 index_df = pd.read_csv('Index.csv')
 com = pd.read_csv('col.csv')
-
-hover_layout = html.Div([
-    html.H4('Details of a location'),
-    html.Div([
-        html.A("This is the info on hover. TODO: substitute with fig")
-    ],
-        className="hover-details"
-    )
-],
-    className="hover-details-container stack-top"
-)
 
 filters_layout = html.Div([
     html.Div([
@@ -53,11 +66,11 @@ filters_layout = html.Div([
 
     ),
     html.Div([
-        html.A('Applied filters:', className='preferencesText'),
+        html.P('Applied filters:', id='preferencesText'),
         dcc.Dropdown(
             placeholder='Select Filters',
             id='filters_drop',
-            options=nationality_options,
+            options=filters,
             clearable=False,
             className='dropdownMenu',
             multi=True
@@ -67,8 +80,41 @@ filters_layout = html.Div([
     ),
 ],
     id="filters_container",
-    className="stack-top col-2"
+    style={"display": "block"},
+    className="stack-top col-3"
 )
+
+initial_popup_layout = html.Div([
+    html.H1("Where to live!", className="title"),
+    html.H3("In this dashboard you can indicate your preferences and navigate the map to find the perfect city \
+    for you to live."),
+    html.H3("Instructions:"),
+    html.P("First, select your preferences using the filters on the top left corner."),
+    html.P("Then navigate through the map and click on the locations to see more details."),
+    html.H3("Click anywhere to start!"),
+
+    html.Div([
+        html.Div([
+            html.H6("Authors:"),
+            html.P("Mario Rodríguez Ibáñez", className="author_name"),
+            html.P("Diogo Acabado", className="author_name"),
+            html.P("Doris Macean", className="author_name"),
+            html.P("Daniel Philippi", className="author_name"),
+        ]),
+        html.Div([
+            html.H6("Sources:"),
+            html.P("asdfasdfajsdhlkansdfmcaksdfasdfasdf", className="source"),
+            html.P("asdfasdvfasdfasxfqwrfasdfasdfvasd", className="source"),
+            html.P("asdfasdvfasdfasdfasdfvgasdfa", className="source"),
+            html.P("Dasdfasdfasdfasdfsvasdfvasdfasdfva", className="source"),
+        ])
+    ],
+        style={"display": "flex", "align": "right", "bottom": "10%"}
+    ),
+],
+    id="initial_popup"
+)
+
 
 info_bar_layout = html.Div([
     html.H1("Where to live!", className="title"),
@@ -94,12 +140,13 @@ info_bar_layout = html.Div([
     ),
 ],
     className="stack-top info_bar row",
+    style={"display": "block"},
     id="info_bar"
 )
 
-selected_country_layout = html.Div([
+selected_location_layout = html.Div([
     html.Div([
-        html.H3("Insert selected country", id="title_selected_country"),
+        html.H3("Insert selected location", id="title_selected_location"),
         html.Span('X', id="x_close_selection")
     ]),
 
@@ -107,14 +154,14 @@ selected_country_layout = html.Div([
     dcc.Graph(id='radar'),
     #dcc.Graph(id='bubble')
 ],
-    id="selected_country",
+    id="selected_location",
     style={"display": "none"}
 )
 
-hovered_country_layout = html.Div([
-    html.H4("Insert selected country"),
+hovered_location_layout = html.Div([
+    html.H4("Insert selected location"),
 ],
-    id="hovered_country",
+    id="hovered_location",
     style={"display": "none"},
 )
 
@@ -126,7 +173,7 @@ suppress_callback_exceptions = True
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-
+    initial_popup_layout,
     html.Div([
         html.Div(id="width", style={'display': 'none'}),  # Just to retrieve the width of the window
         html.Div(id="height", style={'display': 'none'}),  # Just to retrieve the height of the window
@@ -137,12 +184,13 @@ app.layout = html.Div([
             className='background-map-container'
         )
     ],
+        id="map_container",
         style={'display': 'flex'}
     ),
     filters_layout,
     info_bar_layout,
-    selected_country_layout,
-    hovered_country_layout,
+    selected_location_layout,
+    hovered_location_layout,
 ],
     id='page-content',
     style={'position': 'relative'},
@@ -154,59 +202,61 @@ app.layout = html.Div([
 selections = set()
 country_names = {feature['properties']['name']: feature for feature in data_geo['features']}
 
-def get_highlights(selections, geojson=data_geo, country_names=country_names):
-    geojson_highlights = dict()
-    for k in geojson.keys():
-        if k != 'features':
-            geojson_highlights[k] = geojson[k]
-        else:
-            geojson_highlights[k] = [country_names[selection] for selection in selections]
-    return geojson_highlights
+
+@app.callback(Output('initial_popup', 'style'),
+              Input('initial_popup', 'n_clicks'))
+def close_initial_popup(n_clicks):
+    show_flex = {'display': 'flex'}
+    show_block = {'display': 'block'}
+    hide = {'display': 'none'}
+    if n_clicks is not None:
+        return hide
+    else:
+        return show_block
 
 
 @app.callback(Output('dropdown_menu_applied_filters', 'style'),
               Output('select_filters_arrow', 'title'),
               Input('select_filters_arrow', 'n_clicks'),
               State('select_filters_arrow', 'title'))
-def toggle_applied_filters(n_clicks, data):
+def toggle_applied_filters(n_clicks, state):
     style = {'display': 'none'}
     if n_clicks is not None:
-        if data == 'is_open':
+        if state == 'is_open':
             style = {'display': 'none'}
-            data = 'is_closed'
+            state = 'is_closed'
         else:
             style = {'display': 'block'}
-            data = 'is_open'
+            state = 'is_open'
 
-    return style, data
+    return style, state
 
 
-selected_country = ""
+selected_location = ""
 x_close_selection_clicks = -1
 
 
-@app.callback(Output('selected_country', "style"),
-              Output('title_selected_country', "children"),
+@app.callback(Output('selected_location', "style"),
+              Output('title_selected_location', "children"),
               Output('funnel-graph', "figure"),
               Output('radar', "figure"),
-              #Output('bubble', "figure"),
               [Input('map', 'clickData')],
               Input('x_close_selection', 'n_clicks'))
-def update_selected_country(clickData, n_clicks):
-    global selected_country
+def update_selected_location(clickData, n_clicks):
+    global selected_location
     global x_close_selection_clicks
     location = ""
     if clickData is not None:
-        location = clickData['points'][0]['location']
-        if location != selected_country:
-            selected_country = location
+        location = clickData['points'][0]['text']
+        if location != selected_location:
+            selected_location = location
             style = {'display': 'block'}
         else:
-            selected_country = ""
+            selected_location = ""
             location = ""
             style = {'display': 'none'}
     else:
-        selected_country = ""
+        selected_location = ""
         location = ""
         style = {'display': 'none'}
 
@@ -311,82 +361,111 @@ def bubble_happiness(Country):
                       hover_name='Country name', log_x=True, size_max=60)
 
 
-hovered_country = ""
+hovered_location = ""
 
 
-@app.callback(Output('hovered_country', "style"),
-              Output('hovered_country', "children"),
+@app.callback(Output('hovered_location', "style"),
+              Output('hovered_location', "children"),
               [Input('map', 'hoverData')])
-def update_hovered_country(hoverData):
-    global hovered_country
+def update_hovered_location(hoverData):
+    global hovered_location
     location = ""
     if hoverData is not None:
-        location = hoverData['points'][0]['location']
-        if location != hovered_country:
-            hovered_country = location
+        location = hoverData['points'][0]['text']
+        if location != hovered_location:
+            hovered_location = location
             style = {'display': 'block'}
         else:
-            hovered_country = ""
+            hovered_location = ""
             location = ""
             style = {'display': 'none'}
     else:
-        hovered_country = ""
+        hovered_location = ""
         location = ""
         style = {'display': 'none'}
 
-    country_info = html.Div([
+    location_info = html.Div([
         html.H3(location),
         html.Canvas(width=300, height=300)
     ])
 
-    return style, country_info
+    return style, location_info
+
+
+@app.callback(Output('page-content', 'style'),
+              Input('width', 'n_clicks'),
+              Input('height', 'n_clicks'))
+def set_page_size(width, height):
+    return {'width': width, 'height': height}
 
 
 @app.callback(Output('map', 'figure'),
               [Input('filters_drop', 'value')],
-              #              [Input('map', 'clickData')],
               Input('width', 'n_clicks'),
               Input('height', 'n_clicks'))
-def update_map(filter_list, width, height):  # clickData
-    """if clickData is not None:
-        location = clickData['points'][0]['location']
-
-        if location not in selections:
-            selections.add(location)
-        else:
-            selections.remove(location)
-
-        print(selections)
-    """
+def update_map(filter_list, width, height):
     fig = go.Figure()
-    fig.add_trace(
-        go.Choroplethmapbox(geojson=data_geo,
-                            locations=df_emission_0['country_name'],
-                            z=df_emission_0['CO2_emissions'],
-                            zmin=0,
-                            colorscale=[[0, "rgb(255,255,255)"], [1, "rgb(145, 100, 162)"]],
-                            hovertemplate="<extra></extra>"
-                            )
-    )
-    """
-    if len(selections) > 0:
-        highlights = get_highlights(selections, data_geo)
+
+    if filter_list is not None and len(filter_list) != 0:
+
+        filters = []
+        for f in filter_list:
+            filters.append(city_info_bin[f])
+        highlighted = city_info_bin.loc[np.all(filters, 0), ['City Code', 'Country Code', 'lat', 'lng', 'City']]
+        not_highlighted = city_info_bin.loc[~np.all(filters, 0), ['City Code', 'Country Code', 'lat', 'lng', 'City']]
+
+        # Highlighted
         fig.add_trace(
-            go.Choroplethmapbox(geojson=highlights,
-                                colorscale=[[0, "rgba(0,0,0,255)"], [1, "rgba(0, 0, 0, 255)"]],
-                                locations=df_emission_0['country_name'])
+            go.Scattermapbox(
+                lat=highlighted.lat,
+                lon=highlighted.lng,
+                text=highlighted.City,
+                name="Compatible location",
+                mode="markers",
+                marker=go.scattermapbox.Marker(
+                    size=15,
+                    opacity=0.9,
+                    color='#F3D576',
+                ),
+                hovertemplate="<extra></extra>",
+            )
         )
-        print(highlights)
-    """
+    else:
+        not_highlighted = city_info_bin
+
+    # Not highlighted
+    fig.add_trace(
+        go.Scattermapbox(
+            lat=not_highlighted.lat,
+            lon=not_highlighted.lng,
+            text=not_highlighted.City,
+            name="Incompatible location",
+            mode="markers",
+            marker=go.scattermapbox.Marker(
+                size=10,
+                opacity=0.9,
+                color='#333333',
+            ),
+            hovertemplate="<extra></extra>",
+        )
+    )
+
     mapbox_token = "pk.eyJ1IjoiZmFya2l0ZXMiLCJhIjoiY2ttaHYwZnQzMGI0cDJvazVubzEzc2lncyJ9.fczsOA4Hfgdf8_bAAZkdYQ"
     all_plots_layout = dict(
-        mapbox=dict(style="light",
-                    layers=[dict(source=feature,
-                                 below='traces',
-                                 type='fill',
-                                 fill=dict(outlinecolor='gray')
-                                 ) for feature in data_geo['features']],
+        mapbox=dict(style="mapbox://styles/farkites/ckn0lwfm319ae17o5jmk3ckvu",
                     accesstoken=mapbox_token,
+                    ),
+        legend=dict(
+                    bgcolor="rgba(51,51,51,0.6)",
+                    yanchor="top",
+                    y=0.35,
+                    xanchor="left",
+                    x=0,
+                    font=dict(
+                                family="Open Sans",
+                                size=15,
+                                color="white",
+                            ),
                     ),
         autosize=False,
         width=width,
@@ -397,16 +476,7 @@ def update_map(filter_list, width, height):  # clickData
 
     )
     fig.layout = all_plots_layout
-    """
-    if len(selections) > 0:
-        highlights = get_highlights(selections, data_geo)
-        fig.update_mapboxes(dict(
-                                layers=[dict(source=highlight,
-                                              below='traces',
-                                              type='fill',
-                                              fill=dict(outlinecolor='red')
-                               ) for highlight in highlights]))
-    """
+
     return fig
 
 
@@ -436,7 +506,7 @@ app.clientside_callback(
         namespace='clientside',
         function_name='move_hover'
     ),
-    Output('hovered_country', 'title'),
+    Output('hovered_location', 'title'),
     [Input('map', 'hoverData')],
 )
 
