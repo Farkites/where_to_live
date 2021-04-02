@@ -131,7 +131,7 @@ def prepare_world_cities(world_city_file):
         df=cities,
         id_col=['city', 'country'],
         filter_col='population',
-        filter_fct=max)
+        filter_fct=max) 
 
     # rename
 
@@ -267,6 +267,12 @@ def enrich_cities(cities, country_codes, city_codes):
     cities = merge_country_codes_on_cities(cities, country_codes)
 
     cities = merge_city_codes(cities, city_codes)
+
+    cities = filter_per_group(
+        df=cities,
+        id_col=['city_code', 'country_code'],
+        filter_col='population',
+        filter_fct=max)
 
     return cities
 
