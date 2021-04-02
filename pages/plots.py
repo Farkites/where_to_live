@@ -55,13 +55,13 @@ def update_demo(Country):
     trace3 = go.Bar(x=df_plot.Country, y=df_plot['Aged 15-24'], name='Aged 15-24')
     trace4 = go.Bar(x=df_plot.Country, y=df_plot['Aged 25-64'], name='Aged 25-64')
     trace5 = go.Bar(x=df_plot.Country, y=df_plot['Over 65'], name='Over 65')
-    
+
     return {
         'data': [trace1, trace2, trace3, trace4, trace5],
         'layout':
         go.Layout(
             title='Age demographics for {}'.format(Country),
-            orientation = 180,
+            orientation=180,
             barmode='stack')
             }
 
@@ -74,9 +74,9 @@ def update_radar(Country):
     # creating a subset dataframe
 
     # select from:
-    # Quality of Life Index, Purchasing Power Index, Safety Index, Health Care Index, 
-    # Cost of Living Index, Property Price to Income Ratio,	Traffic Commute Time Index	
-    # Pollution Index, Climate Index	
+    # Quality of Life Index, Purchasing Power Index, Safety Index, Health Care Index,
+    # Cost of Living Index, Property Price to Income Ratio,	Traffic Commute Time Index
+    # Pollution Index, Climate Index
     selected = index_df[['Country','Safety Index', 'Health Care Index', 'Cost of Living Index', 'Climate Index','Pollution Index']]
 
     Row_list = []
@@ -84,9 +84,9 @@ def update_radar(Country):
     # get list of values for each country selected
     # Iterate over each row
     for index, row in selected.iterrows():
-        # Create list for the current 
+        # Create list for the current
         r =[row['Safety Index'], row['Health Care Index'], row['Cost of Living Index'], row['Climate Index'], row['Pollution Index']]
-    
+
         # append the list to the final list
         Row_list.append(r)
 

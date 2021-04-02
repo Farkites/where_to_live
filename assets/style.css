@@ -144,7 +144,7 @@ button { /* Style of the buttons*/
   padding-bottom: 10px;
 }
 
-#filters-container{
+#filters_container{
   background-color: #333333;
   padding: 10px;
   color: #FFFFFF;
@@ -153,22 +153,26 @@ button { /* Style of the buttons*/
   border-radius: 5px;
   align: left;
   text-align: left;
-  margin: 20;
   position: absolute;
   top:1%;
   left:1%;
 }
-#filters-container:hover{
+#filters_container:hover{
     opacity:1;
 }
-#filters-container h2{
+#filters_container h2{
     margin: 5px;
 }
 
 #filters_drop{
     border-radius: 5px;
 }
-
+#select_filters_arrow{
+    position: absolute;
+    top: 15px;
+    padding: inherit;
+    right: 15px;
+}
 .nationalityDropdown{
   width: 100%; /* Width of the outside container */
   align-content: flex;
@@ -243,6 +247,7 @@ button { /* Style of the buttons*/
     margin: 20;
     position: absolute;
     bottom: 3%;
+    z=1;
 }
 
 #info_bar:hover {
@@ -260,12 +265,25 @@ button { /* Style of the buttons*/
     position: absolute;
     top: 2%;
     left: 70%;
+    z-index: 1000 !important;
 }
 #selected_country h3{
     margin: 10px;
 }
 #selected_country:hover{
     opacity:1;
+}
+
+#x_close_selection{
+    position: absolute;
+    background: inherit;
+    color: red;
+    height: 20px;
+    width: 20px;
+    top: 15px;
+    padding: inherit;
+    right: 15px;
+    cursor: pointer;
 }
 
 #hovered_country{

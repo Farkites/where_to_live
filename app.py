@@ -4,7 +4,8 @@ import dash_html_components as html
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
-from dash.dependencies import ClientsideFunction, Input, Output
+from dash.dependencies import ClientsideFunction, Input, Output, State
+import plotly.express as px
 
 import urllib.request, json
 
@@ -22,6 +23,12 @@ nationality_options = ["Afghan", "Albanian", "Algerian", "American", "Andorran",
                        "Venezuelan", "Vietnamese", "Welsh", "Yemenite", "Zambian", "Zimbabwean"]
 
 nationality_options = [dict(label=nationality, value=nationality) for nationality in nationality_options]
+
+# datasets needed for plots
+data = pd.read_csv('age_group.csv')
+index_df = pd.read_csv('Index.csv')
+com = pd.read_csv('col.csv')
+
 hover_layout = html.Div([
     html.H4('Details of a location'),
     html.Div([
@@ -34,7 +41,17 @@ hover_layout = html.Div([
 )
 
 filters_layout = html.Div([
-    html.H2('Select your filters'),
+    html.Div([
+        html.H3('Select your filters', style={'display': 'inline'}),
+        html.Span([
+            html.Span(className="Select-arrow", title="is_open")
+        ],
+            className='Select-arrow-zone',
+            id='select_filters_arrow'
+        ),
+    ],
+
+    ),
     html.Div([
         html.A('Applied filters:', className='preferencesText'),
         dcc.Dropdown(
@@ -46,10 +63,10 @@ filters_layout = html.Div([
             multi=True
         )
     ],
-        # className='stack-top'
+        id='dropdown_menu_applied_filters'
     ),
 ],
-    id="filters-container",
+    id="filters_container",
     className="stack-top col-2"
 )
 
@@ -81,7 +98,14 @@ info_bar_layout = html.Div([
 )
 
 selected_country_layout = html.Div([
-    html.H4("Insert selected country"),
+    html.Div([
+        html.H3("Insert selected country", id="title_selected_country"),
+        html.Span('X', id="x_close_selection")
+    ]),
+
+    dcc.Graph(id='funnel-graph'),
+    dcc.Graph(id='radar'),
+    #dcc.Graph(id='bubble')
 ],
     id="selected_country",
     style={"display": "none"}
@@ -130,7 +154,6 @@ app.layout = html.Div([
 selections = set()
 country_names = {feature['properties']['name']: feature for feature in data_geo['features']}
 
-
 def get_highlights(selections, geojson=data_geo, country_names=country_names):
     geojson_highlights = dict()
     for k in geojson.keys():
@@ -141,14 +164,37 @@ def get_highlights(selections, geojson=data_geo, country_names=country_names):
     return geojson_highlights
 
 
+@app.callback(Output('dropdown_menu_applied_filters', 'style'),
+              Output('select_filters_arrow', 'title'),
+              Input('select_filters_arrow', 'n_clicks'),
+              State('select_filters_arrow', 'title'))
+def toggle_applied_filters(n_clicks, data):
+    style = {'display': 'none'}
+    if n_clicks is not None:
+        if data == 'is_open':
+            style = {'display': 'none'}
+            data = 'is_closed'
+        else:
+            style = {'display': 'block'}
+            data = 'is_open'
+
+    return style, data
+
+
 selected_country = ""
+x_close_selection_clicks = -1
 
 
 @app.callback(Output('selected_country', "style"),
-              Output('selected_country', "children"),
-              [Input('map', 'clickData')])
-def update_selected_country(clickData):
+              Output('title_selected_country', "children"),
+              Output('funnel-graph', "figure"),
+              Output('radar', "figure"),
+              #Output('bubble', "figure"),
+              [Input('map', 'clickData')],
+              Input('x_close_selection', 'n_clicks'))
+def update_selected_country(clickData, n_clicks):
     global selected_country
+    global x_close_selection_clicks
     location = ""
     if clickData is not None:
         location = clickData['points'][0]['location']
@@ -164,11 +210,105 @@ def update_selected_country(clickData):
         location = ""
         style = {'display': 'none'}
 
-    country_info = html.Div([
-        html.H3(location),
-        html.Canvas(width=300, height=300)
-    ])
-    return style, country_info
+    if n_clicks != x_close_selection_clicks:
+        style = {'display': 'none'}
+        x_close_selection_clicks = n_clicks
+
+    return style, location, update_demo(location), update_radar(location)#, bubble_happiness(location)
+
+
+def update_demo(Country):
+    if Country == "All Countries":
+        df_plot = data.copy()
+    else:
+        df_plot = data[data['Country'] == Country]
+
+    trace1 = go.Bar(x=df_plot.Country, y=df_plot['Under 5'], name='Under 5')
+    trace2 = go.Bar(x=df_plot.Country, y=df_plot['Aged 5-14'], name='Aged 5-14')
+    trace3 = go.Bar(x=df_plot.Country, y=df_plot['Aged 15-24'], name='Aged 15-24')
+    trace4 = go.Bar(x=df_plot.Country, y=df_plot['Aged 25-64'], name='Aged 25-64')
+    trace5 = go.Bar(x=df_plot.Country, y=df_plot['Over 65'], name='Over 65')
+
+    return {
+        'data': [trace1, trace2, trace3, trace4, trace5],
+        'layout':
+            go.Layout(
+                title='Age demographics for {}'.format(Country),
+                orientation=180,
+                barmode='stack',
+                #margin=go.layout.Margin(
+                #    l=0,  # left margin
+                #    r=0,  # right margin
+                #    b=0,  # bottom margin
+                #    t=0  # top margin
+                #),
+                width=350,
+                height=300,
+            ),
+
+    }
+
+
+# radar plot to compare index values
+def update_radar(Country):
+    # creating a subset dataframe
+
+    # select from:
+    # Quality of Life Index, Purchasing Power Index, Safety Index, Health Care Index,
+    # Cost of Living Index, Property Price to Income Ratio,	Traffic Commute Time Index
+    # Pollution Index, Climate Index
+    selected = index_df[
+        ['Country', 'Safety Index', 'Health Care Index', 'Cost of Living Index', 'Climate Index', 'Pollution Index']]
+
+    Row_list = []
+
+    # get list of values for each country selected
+    # Iterate over each row
+    for index, row in selected.iterrows():
+        # Create list for the current
+        r = [row['Safety Index'], row['Health Care Index'], row['Cost of Living Index'], row['Climate Index'],
+             row['Pollution Index']]
+
+        # append the list to the final list
+        Row_list.append(r)
+
+    # list of attributes to be compared
+    categories = ['Safety Index', 'Health Care Index', 'Cost of Living Index', 'Climate Index', 'Pollution Index']
+    categories = [*categories, categories[0]]
+
+    country_1 = Row_list[0]
+    country_2 = Row_list[1]
+    country_3 = Row_list[2]
+    country_1 = [*country_1, country_1[0]]
+    country_2 = [*country_2, country_2[0]]
+    country_3 = [*country_3, country_3[0]]
+
+    return go.Figure(
+        data=[
+            go.Scatterpolar(r=country_1, theta=categories, fill='toself', name='Country 1'),
+            # go.Scatterpolar(r=country_2, theta=categories, fill='toself', name='Country 2'),
+            # go.Scatterpolar(r=country_3, theta=categories, fill='toself', name='Country 3')
+        ],
+        layout=go.Layout(
+            title=go.layout.Title(text='Country'),
+            polar={'radialaxis': {'visible': True}},
+            showlegend=True,
+            #margin=go.layout.Margin(
+            #    l=0,  # left margin
+            #    r=0,  # right margin
+            #    b=0,  # bottom margin
+            #    t=0  # top margin
+            #),
+            width=350,
+            height=300,
+        )
+    )
+
+
+def bubble_happiness(Country):
+    return px.scatter(com, x="Logged GDP per capita", y="Healthy life expectancy",
+                      size="population", color="Ladder score",
+                      hover_name='Country name', log_x=True, size_max=60)
 
 
 hovered_country = ""
@@ -207,7 +347,7 @@ def update_hovered_country(hoverData):
               #              [Input('map', 'clickData')],
               Input('width', 'n_clicks'),
               Input('height', 'n_clicks'))
-def update_map(filter_list, width, height):#clickData
+def update_map(filter_list, width, height):  # clickData
     """if clickData is not None:
         location = clickData['points'][0]['location']
 
