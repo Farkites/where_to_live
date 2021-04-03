@@ -25,9 +25,9 @@ nationality_options = ["Afghan", "Albanian", "Algerian", "American", "Andorran",
 nationality_options = [dict(label=nationality, value=nationality) for nationality in nationality_options]
 
 # datasets needed for plots
-data = pd.read_csv('age_group.csv')
-index_df = pd.read_csv('Index.csv')
-com = pd.read_csv('col.csv')
+data = pd.read_csv('data/age_group.csv')
+index_df = pd.read_csv('data/Index.csv')
+com = pd.read_csv('data/com.csv')
 
 hover_layout = html.Div([
     html.H4('Details of a location'),
@@ -250,7 +250,7 @@ def update_demo(Country):
 
 
 # radar plot to compare index values
-def update_radar(Country):
+def update_radar(City):
     # creating a subset dataframe
 
     # select from:
@@ -260,49 +260,52 @@ def update_radar(Country):
     selected = index_df[
         ['Country', 'Safety Index', 'Health Care Index', 'Cost of Living Index', 'Climate Index', 'Pollution Index']]
 
-    Row_list = []
+    select_df = selected[selected['City'] == City]
 
+    Row_list = []
+    r=[]
     # get list of values for each country selected
     # Iterate over each row
-    for index, row in selected.iterrows():
-        # Create list for the current
-        r = [row['Safety Index'], row['Health Care Index'], row['Cost of Living Index'], row['Climate Index'],
-             row['Pollution Index']]
+    for index, rows in select_df.iterrows():
+        for i in range(len(cat)):
+            # Create list for the current 
+            r.append(rows[cat[i]])
 
-        # append the list to the final list
+            # append the list to the final list
         Row_list.append(r)
+        Row_list=list(np.concatenate(Row_list).flat)
 
     # list of attributes to be compared
     categories = ['Safety Index', 'Health Care Index', 'Cost of Living Index', 'Climate Index', 'Pollution Index']
     categories = [*categories, categories[0]]
 
-    country_1 = Row_list[0]
-    country_2 = Row_list[1]
-    country_3 = Row_list[2]
-    country_1 = [*country_1, country_1[0]]
-    country_2 = [*country_2, country_2[0]]
-    country_3 = [*country_3, country_3[0]]
-
     return go.Figure(
         data=[
-            go.Scatterpolar(r=country_1, theta=categories, fill='toself', name='Country 1'),
-            # go.Scatterpolar(r=country_2, theta=categories, fill='toself', name='Country 2'),
-            # go.Scatterpolar(r=country_3, theta=categories, fill='toself', name='Country 3')
+            go.Barpolar(
+                        r=Row_list,
+                        theta=categories,
+                        name=City,
+                        marker_color=["#E4FF87",'#e1bbfa','#fabbf3', '#709BFF', '#b6faf8', '#e1e6e2', '#FFAA70', '#FFDF70', '#B6FFB4',],
+                        marker_line_color='white',
+                        hoverinfo=['theta']*9,
+                        opacity=0.7,
+                        base=0)
+            
         ],
-        layout=go.Layout(
-            title=go.layout.Title(text='Country'),
-            polar={'radialaxis': {'visible': True}},
-            showlegend=True,
-            #margin=go.layout.Margin(
-            #    l=0,  # left margin
-            #    r=0,  # right margin
-            #    b=0,  # bottom margin
-            #    t=0  # top margin
-            #),
-            width=350,
-            height=300,
-        )
-    )
+        layout=[go.Layout(
+                    title=go.layout.Title(text=City),
+                    polar_angularaxis_rotation=90,
+                    polar=dict(
+                    bgcolor='rgba(0,0,0,0)',
+                    angularaxis=dict(linewidth=3, showline=False,showticklabels=True),
+                    radialaxis=dict(showline=False,
+                    showticklabels=False,
+                    linewidth=2,
+                    gridcolor='white',
+                    gridwidth=2)),
+                    showlegend=True,
+            
+            )])
 
 
 def bubble_happiness(Country):
