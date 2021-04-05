@@ -54,37 +54,63 @@ def custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg):
     legend = [False for _ in range(len(dims_selected))]
     legend[0] = True
 
+    median_name = 'All cities (median)'
+    selected_name = 'Selected city'
+
     for idx, dim in enumerate(dims_selected):
 
         # crate traces
         trace1 = go.Bar(
             y=[dim],
             x=[vals_agg[idx]],
-            name='Median',  legendgroup='Median',
+            name=median_name,  legendgroup=median_name,
             orientation='h',
             marker=dict(
-                color='rgba(58, 71, 80, 0.6)'
+                color='#986EA8' # dark grey #333333
             ),
-            showlegend=legend[idx]
+            showlegend=legend[idx],
+            opacity=1
+
         )
         trace2 = go.Bar(
 
             y=[dim],
             x=[vals_city[idx]],
-            name='Selected', legendgroup='Selected',
+            name=selected_name, legendgroup=selected_name,
             orientation='h',
             marker=dict(
-                color='rgba(246, 78, 139, 0.6)'
+                color='#F3D576' # purple: #986EA8
             ),
-            showlegend=legend[idx]
+            showlegend=legend[idx],
+            opacity=1
             )
 
         fig.add_trace(trace1, row=idx+1, col=1)
         fig.add_trace(trace2, row=idx+1, col=1)
 
 
-    fig.update_layout(barmode='group')
-    fig.update_yaxes(visible=False)
+    fig.update_layout(
+        barmode='group', # overlay
+        legend=dict(
+            orientation="h"
+            #,
+            #yanchor="bottom",
+            #y=1.02,
+            #xanchor="right",
+            #x=1
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(
+            family="Open sans",
+            size=12,
+            color="White"
+        )
+    )
+    fig.update_yaxes(visible=False, gridcolor='rgba(0,0,0,0)')
+    fig.update_xaxes(gridcolor='rgba(0,0,0,0)')
+
+
 
     return fig
 
