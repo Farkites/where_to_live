@@ -122,7 +122,7 @@ selected_location_layout = html.Div([
     ]),
 
     dcc.Graph(id='funnel-graph'),
-    dcc.Graph(id='radar'),
+    #dcc.Graph(id='radar'),
     #dcc.Graph(id='bubble')
 ],
     id="selected_location",
@@ -130,7 +130,10 @@ selected_location_layout = html.Div([
 )
 
 hovered_location_layout = html.Div([
-    html.H4("Insert selected location"),
+    html.Div([
+        html.H3("city", id='hover_title'),
+        dcc.Graph("radar")
+    ]),
 ],
     id="hovered_location",
     style={"display": "none"},
@@ -207,7 +210,7 @@ x_close_selection_clicks = -1
 
 @app.callback(Output('selected_location', "style"),
               Output('title_selected_location', "children"),
-              Output('radar', "figure"),
+              #Output('radar', "figure"),
               [Input('map', 'clickData')],
               Input('x_close_selection', 'n_clicks'))
 def update_selected_location(clickData, n_clicks):
@@ -232,7 +235,7 @@ def update_selected_location(clickData, n_clicks):
         style = {'display': 'none'}
         x_close_selection_clicks = n_clicks
 
-    return style, location, update_radar(location)#, bubble_linked(location) 
+    return style, location#, update_radar(location)#, bubble_linked(location)
 
 
 
@@ -354,12 +357,11 @@ def bubble_linked(city):
     return fig
 
 
-
 hovered_location = ""
 
-
 @app.callback(Output('hovered_location', "style"),
-              Output('hovered_location', "children"),
+              Output('radar', 'figure'),
+              Output('hover_title', 'children'),
               [Input('map', 'hoverData')])
 def update_hovered_location(hoverData):
     global hovered_location
@@ -378,12 +380,7 @@ def update_hovered_location(hoverData):
         location = ""
         style = {'display': 'none'}
 
-    location_info = html.Div([
-        html.H3(location),
-        html.Canvas(width=300, height=300)
-    ])
-
-    return style, location_info
+    return style, update_radar(location), location
 
 
 @app.callback(Output('page-content', 'style'),
