@@ -21,6 +21,13 @@ temperature_df = pd.read_csv('city_temperature.csv')
 data = pd.read_csv('df_final.csv')
 city_info_num = data.copy()
 
+# name mapper
+with open('mapping_dict_final_binary.json', 'w') as f:
+    dimension_mapper_binary = json.load(f)
+
+with open('mapping_dict_final.json', 'w') as f:
+    dimension_mapper = json.load(f)
+
 colnames_to_lower = dict(zip(
     city_info_num.drop(columns=["City", "Country", "Lat", "Long"]).columns,
     map(str.lower, city_info_num.drop(columns=["City", "Country", "Lat", "Long"]).columns)
