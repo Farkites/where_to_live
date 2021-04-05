@@ -374,10 +374,10 @@ def update_radar(city):
     fig = go.Figure()
 
     fig.add_trace(go.Barpolar(
-        r=Row_list,
+        r=df.mean(axis=0).tolist(),
         theta=cat,
-        name=city,
-        marker_color=['rgb(243,203,70)'] * 6,
+        name='Average',
+        marker_color=['#986EA8'] * 6,
         marker_line_color='white',
         hoverinfo=['theta'] * 9,
         opacity=0.7,
@@ -385,10 +385,10 @@ def update_radar(city):
     ))
 
     fig.add_trace(go.Barpolar(
-        r=df.mean(axis=0).tolist(),
+        r=Row_list,
         theta=cat,
-        name='Average',
-        marker_color=['#986EA8'] * 6,
+        name=city,
+        marker_color=['rgb(243,203,70)'] * 6,
         marker_line_color='white',
         hoverinfo=['theta'] * 9,
         opacity=0.7,
