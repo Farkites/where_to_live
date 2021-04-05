@@ -30,7 +30,6 @@ colnames_to_lower = dict(zip(
 
 ))
 city_info_num.rename(columns=colnames_to_lower, inplace=True)
-print(city_info_num.columns)
 
 city_info_num_agg = city_info_num.drop(columns=['City', 'Country']).apply(np.median)
 
@@ -253,8 +252,8 @@ def update_selected_location(clickData, n_clicks, dims_selected):
 def update_custom_dims_plot(location, dims_selected):
     if dims_selected is None:
         dims_selected = ['tourism']
-    if location is None:
-        return None
+    if len(location) == 0:
+        return go.Figure()
     fig = custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg)
     return fig
 
