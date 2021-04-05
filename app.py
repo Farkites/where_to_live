@@ -127,7 +127,7 @@ selected_location_layout = html.Div([
     ]),
 
     # dcc.Graph(id='radar'),
-    # dcc.Graph(id='bubble')
+    dcc.Graph(id='bubble'),
     dcc.Graph(id='custom_dims_plot'),
     dcc.Graph(id='heatmap')
 
@@ -219,10 +219,14 @@ x_close_selection_clicks = -1
 @app.callback(Output('selected_location', "style"),
               Output('title_selected_location', "children"),
               Output('custom_dims_plot', "figure"),
+              Output('bubble','figure'),
               [Input('map', 'clickData')],
               Input('x_close_selection', 'n_clicks'),
-              [Input('filters_drop', 'value')])
-def update_selected_location(clickData, n_clicks, dims_selected):
+              [Input('filters_drop', 'value')],
+              [Input('bubble', 'selectedData'),
+                Input('bubble', 'clickData')],
+                [State('bubble','figure')])
+def update_selected_location(clickData, n_clicks, dims_selected,bubbleSelect,bubbleClick,bubbleState):
     global selected_location
     global x_close_selection_clicks
     location = ""
@@ -245,8 +249,13 @@ def update_selected_location(clickData, n_clicks, dims_selected):
         style = {'display': 'none'}
         selected_location = ""
         x_close_selection_clicks = n_clicks
+    
+    if bubbleSelect is not None or bubbleClick is not None or bubbleState is not None:
+        bubble_fig = update_color(bubbleSelect, bubbleClick, bubbleState) 
+    else:
+        bubble_fig = build_figure()
 
-    return style, location, update_custom_dims_plot(location, dims_selected)
+    return style, location, update_custom_dims_plot(location, dims_selected), bubble_fig
 
 
 def update_custom_dims_plot(location, dims_selected):
@@ -256,64 +265,6 @@ def update_custom_dims_plot(location, dims_selected):
         return go.Figure()
     fig = custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg)
     return fig
-
-
-def bubble_linked(city):
-    md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
-               'Transport', 'Health', 'Food', 'Internet Speed',
-               'Access to Contraception', 'Gender Equality', 'Immigration Tolerance',
-               'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']]
-
-    for column in md.columns.tolist()[1:]:
-        md['{column}_q'.format(column=column)] = pd.qcut(md[column].rank(method='first'), 4, labels=False)
-
-    # Build parcats dimensions
-    quartiles = ['Startup_q', 'Internet Speed_q', 'Gender Equality_q', 'Immigration Tolerance_q', 'LGBT Friendly_q',
-                 'Nightscene_q', ]
-
-    dimensions = [dict(values=md[label], label=label) for label in quartiles]
-
-    # Build colorscale
-    color = np.zeros(len(md), dtype='uint8')
-    colorscale = [[0, 'gray'], [1, 'firebrick']]
-
-    size = md['Employment'] * 10
-    # Build figure as FigureWidget
-    fig = go.FigureWidget(
-        data=[go.Scatter(x=md['Food'], y=md['Health'],
-                         marker={'color': 'gray', 'size': size}, mode='markers',
-                         selected={'marker': {'color': 'firebrick'}},
-                         unselected={'marker': {'opacity': 0.3}}), go.Parcats(
-            domain={'y': [0, 0.4]},
-            dimensions=dimensions,
-            line={'colorscale': colorscale, 'cmin': 0,
-                  'cmax': 1, 'color': color})
-              ])
-
-    fig.update_layout(
-        height=800, xaxis={'title': 'Employment'},
-        yaxis={'title': 'Health', 'domain': [0.6, 1]},
-        dragmode='lasso', hovermode='closest',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)')
-
-    # Update color callback
-    def update_color(trace, points, state):
-        # Update scatter selection
-        fig.data[0].selectedpoints = points.point_inds
-
-        # Update parcats colors
-        new_color = np.zeros(len(md), dtype='uint8')
-        new_color[points.point_inds] = 1
-        fig.data[1].line.color = new_color
-
-    # Register callback on scatter selection...
-    fig.data[0].on_selection(update_color)
-    # and parcats click
-    fig.data[1].on_click(update_color)
-
-    return fig
-
 
 @app.callback(Output('heatmap', 'figure'),
               Input('url', 'href'))
@@ -379,7 +330,6 @@ def update_hovered_location(hoverData):
 
     return style, update_radar(location), location
 
-
 # radar plot to compare index values
 def update_radar(city):
     # creating a subset dataframe
@@ -409,7 +359,7 @@ def update_radar(city):
     fig.add_trace(go.Barpolar(
         r=Row_list,
         theta=cat,
-        name='',
+        name=city,
         marker_color=['rgb(243,203,70)'] * 6,
         marker_line_color='white',
         hoverinfo=['theta'] * 9,
@@ -420,8 +370,8 @@ def update_radar(city):
     fig.add_trace(go.Barpolar(
         r=df.mean(axis=0).tolist(),
         theta=cat,
-        name='',
-        marker_color=['#d1d1cf'] * 6,
+        name='Average',
+        marker_color=['#986EA8'] * 6,
         marker_line_color='white',
         hoverinfo=['theta'] * 9,
         opacity=0.7,
@@ -430,15 +380,19 @@ def update_radar(city):
 
     fig.update_layout(
         title='',
-        font_size=12,
+        font_size=18,
+
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font_color="white",
         polar=dict(
-            bgcolor='rgba(0,0,0,0)',
-            angularaxis=dict(linewidth=3, showline=False, showticklabels=True),
-            radialaxis=dict(showline=False,
-                            showticklabels=False,
-                            linewidth=2,
-                            gridcolor='white',
-                            gridwidth=2)))
+        bgcolor='rgba(0,0,0,0)',
+        angularaxis=dict(linewidth=3, showline=False,showticklabels=True),
+        radialaxis=dict(showline=False,
+                        showticklabels=False,
+                linewidth=2,
+                gridcolor='rgba(0,0,0,0)',
+                gridwidth=2)))
 
     return fig
 
@@ -528,6 +482,73 @@ def update_map(filter_list, width, height):
     )
     fig.layout = all_plots_layout
 
+    return fig
+
+md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
+       'Transport', 'Health', 'Food', 'Internet Speed',
+       'Access to Contraception', 'Gender Equality', 'Immigration Tolerance',
+       'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']]
+    
+for column in md.columns.tolist()[1:]:
+    md['{column}_q'.format(column=column)] = pd.qcut(md[column].rank(method='first'), 4, labels=False)
+
+# Build parcats dimensions
+quartiles = ['Startup_q', 'Internet Speed_q', 'Gender Equality_q','Immigration Tolerance_q','LGBT Friendly_q','Nightscene_q',]
+
+
+dimensions = [dict(values=md[label], label=label) for label in quartiles]
+
+# Build colorscale
+color = np.zeros(len(md), dtype='uint8')
+colorscale = [[0, 'gray'], [1, 'rgb(243,203,70)']]
+
+size = md['Employment']*30
+
+# bubble plot related indicators
+def build_figure():
+    
+    # Build figure as FigureWidget
+    fig = go.Figure(
+        data=[go.Scatter(x=md['Food'], y=md['Health'],
+        marker={'color': 'gray','size':size}, mode='markers', selected={'marker': {'color': 'rgb(243,203,70)'}},
+        unselected={'marker': {'opacity': 0.3}}), go.Parcats(
+            domain={'y': [0, 0.4]}, 
+            dimensions=dimensions,
+            line={'colorscale': colorscale, 'cmin': 0,
+                'cmax': 1, 'color': color,'shape': 'hspline'})
+        ])
+
+    fig.update_layout(
+            height=800, xaxis={'title': 'Employment'},
+            yaxis={'title': 'Health', 'domain': [0.6, 1]},
+            dragmode='lasso', hovermode='closest',
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            autosize=False,
+            bargap=0.35)
+    return fig 
+
+#app = dash.Dash(prevent_initial_callbacks=True)
+#app.layout = html.Div([dcc.Graph(figure=build_figure(), id="graph")])
+
+
+    # Update color callback
+def update_color(selectedData, clickData, fig):
+        
+    selection = None
+
+    # Update selection based on which event triggered the update.
+    trigger = dash.callback_context.triggered[0]["prop_id"]
+    if trigger == 'bubble.clickData':
+        selection = [point["pointNumber"] for point in clickData["points"]]
+    if trigger == 'bubble.selectedData':
+        selection = [point["pointIndex"] for point in selectedData["points"]]
+    # Update scatter selection
+    fig["data"][0]["selectedpoints"] = selection
+    # Update parcats colors
+    new_color = np.zeros(len(md), dtype='uint8')
+    new_color[selection] = 1
+    fig["data"][1]["line"]["color"] = new_color
     return fig
 
 

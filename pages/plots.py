@@ -1,7 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -18,7 +18,7 @@ city_options = data['City'].tolist()
 app = dash.Dash()
 
 app.layout = html.Div([
-    html.H2("Age demographics"),
+    html.H2("Bubble"),
     html.Div(
         [
             dcc.Dropdown(
@@ -131,40 +131,38 @@ def update_radar(city):
     return fig
 
 
-@app.callback(
-    dash.dependencies.Output('bubble', 'figure'),
-    [dash.dependencies.Input('City', 'value')])
-
-# bubble plot for happiness and related indicators
-def bubble_linked(city):
-    md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
+md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
        'Transport', 'Health', 'Food', 'Internet Speed',
        'Access to Contraception', 'Gender Equality', 'Immigration Tolerance',
        'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']]
     
-    for column in md.columns.tolist()[1:]:
-        md['{column}_q'.format(column=column)] = pd.qcut(md[column].rank(method='first'), 4, labels=False)
+for column in md.columns.tolist()[1:]:
+    md['{column}_q'.format(column=column)] = pd.qcut(md[column].rank(method='first'), 4, labels=False)
 
-    # Build parcats dimensions
-    quartiles = ['Startup_q', 'Internet Speed_q', 'Gender Equality_q','Immigration Tolerance_q','LGBT Friendly_q','Nightscene_q',]
+# Build parcats dimensions
+quartiles = ['Startup_q', 'Internet Speed_q', 'Gender Equality_q','Immigration Tolerance_q','LGBT Friendly_q','Nightscene_q',]
 
 
-    dimensions = [dict(values=md[label], label=label) for label in quartiles]
+dimensions = [dict(values=md[label], label=label) for label in quartiles]
 
-    # Build colorscale
-    color = np.zeros(len(md), dtype='uint8')
-    colorscale = [[0, 'gray'], [1, 'firebrick']]
+# Build colorscale
+color = np.zeros(len(md), dtype='uint8')
+colorscale = [[0, 'gray'], [1, 'rgb(243,203,70)']]
 
-    size = md['Employment']*5
+size = md['Employment']*30
+
+# bubble plot for happiness and related indicators
+def build_figure():
+    
     # Build figure as FigureWidget
-    fig = go.FigureWidget(
+    fig = go.Figure(
         data=[go.Scatter(x=md['Food'], y=md['Health'],
-        marker={'color': 'gray','size':size}, mode='markers', selected={'marker': {'color': 'firebrick'}},
+        marker={'color': 'gray','size':size}, mode='markers', selected={'marker': {'color': 'rgb(243,203,70)'}},
         unselected={'marker': {'opacity': 0.3}}), go.Parcats(
             domain={'y': [0, 0.4]}, 
             dimensions=dimensions,
             line={'colorscale': colorscale, 'cmin': 0,
-                'cmax': 1, 'color': color})
+                'cmax': 1, 'color': color,'shape': 'hspline'})
         ])
 
     fig.update_layout(
@@ -172,25 +170,46 @@ def bubble_linked(city):
             yaxis={'title': 'Health', 'domain': [0.6, 1]},
             dragmode='lasso', hovermode='closest',
             paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)')
+            plot_bgcolor='rgba(0,0,0,0)',
+            autosize=False,
+            bargap=0.35)
+    return fig 
+
+app = dash.Dash(prevent_initial_callbacks=True)
+app.layout = html.Div([dcc.Graph(figure=build_figure(), id="graph")])
+
+@app.callback(
+    dash.dependencies.Output('graph', 'figure'),
+    [dash.dependencies.Input('graph', 'selectedData'),
+    dash.dependencies.Input('graph', 'clickData')],
+    [State('graph','figure')])
 
     # Update color callback
-    def update_color(trace, points, state):
-        # Update scatter selection
-        fig.data[0].selectedpoints = points.point_inds
+def update_color(selectedData, clickData, fig):
+        
+    #trace, points, state):
+    # Update scatter selection
+    #fig.data[0].selectedpoints = points.point_inds
 
-        # Update parcats colors
-        new_color = np.zeros(len(md), dtype='uint8')
-        new_color[points.point_inds] = 1
-        fig.data[1].line.color = new_color
+    selection = None
 
-    # Register callback on scatter selection...
-    fig.data[0].on_selection(update_color)
-    # and parcats click
-    fig.data[1].on_click(update_color)
-
+    # Update selection based on which event triggered the update.
+    trigger = dash.callback_context.triggered[0]["prop_id"]
+    if trigger == 'graph.clickData':
+        selection = [point["pointNumber"] for point in clickData["points"]]
+    if trigger == 'graph.selectedData':
+        selection = [point["pointIndex"] for point in selectedData["points"]]
+    # Update scatter selection
+    fig["data"][0]["selectedpoints"] = selection
+    # Update parcats colors
+    new_color = np.zeros(len(md), dtype='uint8')
+    new_color[selection] = 1
+    fig["data"][1]["line"]["color"] = new_color
     return fig
-    
+    # Register callback on scatter selection...
+    #fig.data[0].on_selection(update_color)
+    # and parcats click
+    #fig.data[1].on_click(update_color)
 
 
 if __name__ == '__main__':
