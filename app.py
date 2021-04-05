@@ -9,43 +9,13 @@ import plotly.express as px
 
 import urllib.request, json
 
-with urllib.request.urlopen('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json') as url:
-    data_geo = json.loads(url.read().decode())
-
-for feature in data_geo['features']:
-    feature['id'] = feature['properties']['name']
 path_datasets = 'https://raw.githubusercontent.com/nalpalhao/DV_Practival/master/datasets/'
-df_emissions = pd.read_csv(path_datasets + 'emissions.csv')
-df_emission_0 = df_emissions.loc[df_emissions['year'] == 2000][['country_name', 'CO2_emissions']]
-
-nationality_options = ["Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguans", "Argentinean",
-                       "Tunisian", "Turkish", "Tuvaluan", "Ugandan", "Ukrainian", "Uruguayan", "Uzbekistani",
-                       "Venezuelan", "Vietnamese", "Welsh", "Yemenite", "Zambian", "Zimbabwean"]
-
-nationality_options = [dict(label=nationality, value=nationality) for nationality in nationality_options]
 
 
-preferences_list = ["high logged gdp per capita","low logged gdp per capita","high social support","low social support",\
-                    "high healthy life expectancy","low healthy life expectancy","high freedom to make life choices",\
-                    "low freedom to make life choices","high generosity","low generosity","high perceptions of corruption",\
-                    "low perceptions of corruption","high cost of living index","low cost of living index",\
-                    "high purchasing power index","low purchasing power index","high safety index","low safety index",\
-                    "high health care index","low health care index","high pollution index","low pollution index",\
-                    "high mcmeal at mcdonalds (or equivalent combo meal)","low mcmeal at mcdonalds (or equivalent combo meal)",\
-                    "high domestic beer (0.5 liter draught)","low domestic beer (0.5 liter draught)",\
-                    "high water (1.5 liter bottle)","low water (1.5 liter bottle)","high cappuccino (regular)",\
-                    "low cappuccino (regular)","high apartment (1 bedroom) in city centre",\
-                    "low apartment (1 bedroom) in city centre","high apartment (1 bedroom) outside of centre",\
-                    "low apartment (1 bedroom) outside of centre",\
-                    "high basic (electricity, heating, cooling, water, garbage) for 85m2 apartment",\
-                    "low basic (electricity, heating, cooling, water, garbage) for 85m2 apartment",\
-                    "high internet (60 mbps or more, unlimited data, cable/adsl)",\
-                    "low internet (60 mbps or more, unlimited data, cable/adsl)",\
-                    "high fitness club, monthly fee for 1 adult","low fitness club, monthly fee for 1 adult",\
-                    "high average monthly net salary (after tax)","low average monthly net salary (after tax)",\
-                    "high avgtemperature","low avgtemperature"]
+city_info_bin = pd.read_csv('data_bool_geo_final.csv')
+preferences_list = list(city_info_bin.drop(columns=["City", "Country", "Lat", "Long"]).columns)
 filters = [dict(label=parameter, value=parameter) for parameter in preferences_list]
-city_info_bin = pd.read_csv('data_bool_geo.csv')
+
 
 
 # datasets needed for plots
@@ -200,8 +170,6 @@ app.layout = html.Div([
 #   Figures     #
 #################
 selections = set()
-country_names = {feature['properties']['name']: feature for feature in data_geo['features']}
-
 
 @app.callback(Output('initial_popup', 'style'),
               Input('initial_popup', 'n_clicks'))
@@ -411,14 +379,14 @@ def update_map(filter_list, width, height):
         filters = []
         for f in filter_list:
             filters.append(city_info_bin[f])
-        highlighted = city_info_bin.loc[np.all(filters, 0), ['City Code', 'Country Code', 'lat', 'lng', 'City']]
-        not_highlighted = city_info_bin.loc[~np.all(filters, 0), ['City Code', 'Country Code', 'lat', 'lng', 'City']]
+        highlighted = city_info_bin.loc[np.all(filters, 0), ['City', 'Country', 'Lat', 'Long']]
+        not_highlighted = city_info_bin.loc[~np.all(filters, 0), ['City', 'Country', 'Lat', 'Long']]
 
         # Highlighted
         fig.add_trace(
             go.Scattermapbox(
-                lat=highlighted.lat,
-                lon=highlighted.lng,
+                lat=highlighted.Lat,
+                lon=highlighted.Long,
                 text=highlighted.City,
                 name="Compatible location",
                 mode="markers",
@@ -436,8 +404,8 @@ def update_map(filter_list, width, height):
     # Not highlighted
     fig.add_trace(
         go.Scattermapbox(
-            lat=not_highlighted.lat,
-            lon=not_highlighted.lng,
+            lat=not_highlighted.Lat,
+            lon=not_highlighted.Long,
             text=not_highlighted.City,
             name="Incompatible location",
             mode="markers",

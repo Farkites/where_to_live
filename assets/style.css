@@ -184,7 +184,9 @@ button { /* Style of the buttons*/
     background-color: #444444;
     border-radius: 5px;
 }
-
+.Select-control {
+    padding: 5px;
+}
 .Select-control:focus, .Select-control:select, .is-focused{
     box-shadow: 5px solid #F3D576 !important;
     border: 1px solid #F3D576 !important;
@@ -199,6 +201,7 @@ button { /* Style of the buttons*/
     border-radius: 5px !important;
     border: none !important;
     color: #EEEEEE !important;
+    margin: 5px;
 }
 
 .Select-value-icon  {
