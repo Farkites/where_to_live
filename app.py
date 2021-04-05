@@ -558,7 +558,13 @@ for column in md.columns.tolist()[1:]:
 quartiles = ['Startup.', 'Internet Speed.', 'Gender Equality.','Immigration Tolerance.','LGBT Friendly.','Nightscene.',]
 
 
-dimensions = [dict(values=md[label], label=label) for label in quartiles]
+dimensions = []
+for label in quartiles:
+    tmp = go.parcats.Dimension(
+        values=md[label],
+        categoryorder='category descending', label=label
+    )
+    dimensions.append(tmp)
 
 # Build colorscale
 color = np.zeros(len(md), dtype='uint8')
