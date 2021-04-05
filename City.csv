@@ -1,0 +1,373 @@
+,City,country,Cost of Living Index,Purchasing Power Index,Safety Index,Health Care Index,Pollution Index
+0,Saint Petersburg,Russia,0.24,0.26,0.61,0.59,0.62
+1,Istanbul,Turkey,0.23,0.22,0.52,0.69,0.69
+2,İzmir,Turkey,0.21,0.24,0.72,0.73,0.6
+3,Helsinki,Finland,0.54,0.55,0.75,0.77,0.13
+4,Chisinau,Moldova,0.31,0.22,0.76,0.85,0.77
+5,Milan,Italy,0.56,0.34,0.56,0.72,0.67
+6,Cairo,Egypt,0.22,0.15,0.5,0.45,0.92
+7,Banja Luka,Bosnia and Herzegovina,,,,,
+8,Baku,Azerbaijan,0.22,0.18,0.7,0.44,0.77
+9,Guadalajara,Mexico,0.23,0.25,0.38,0.79,0.66
+10,Kathmandu,Nepal,0.21,0.14,0.64,0.57,0.96
+11,Hanoi,Vietnam,0.25,0.2,0.63,0.56,0.89
+12,Ho Chi Minh City,Vietnam,0.26,0.18,0.46,0.59,0.93
+13,Mexico City,Mexico,0.27,0.25,0.31,0.65,0.83
+14,Rome,Italy,0.53,0.33,0.48,0.59,0.67
+15,Monterrey,Mexico,0.27,0.31,0.5,0.67,0.72
+16,Yekaterinburg,Russia,0.21,0.3,0.53,0.51,0.77
+17,Sarajevo,Bosnia and Herzegovina,0.27,0.35,0.53,0.57,0.68
+18,Kharkiv,Ukraine,0.2,0.2,0.52,0.47,0.56
+19,Kyiv,Ukraine,0.21,0.25,0.53,0.56,0.66
+20,Calgary,Canada,0.49,0.75,0.66,0.76,0.24
+21,Tunis,Tunisia,,,,,
+22,Edmonton,Canada,0.48,0.68,0.57,0.78,0.3
+23,Amsterdam,Netherlands,0.58,0.53,0.66,0.7,0.31
+24,Belgrade,Serbia,0.28,0.24,0.61,0.53,0.64
+25,Odesa,Ukraine,0.21,0.22,0.46,0.51,0.64
+26,Paris,France,0.63,0.46,0.47,0.79,0.65
+27,Eindhoven,Netherlands,0.55,0.57,0.76,0.73,0.23
+28,Plovdiv,Bulgaria,,,,,
+29,Thessaloníki,Greece,0.42,0.23,0.52,0.56,0.64
+30,Ottawa,Canada,0.48,0.58,0.74,0.75,0.21
+31,Sofia,Bulgaria,0.29,0.31,0.58,0.57,0.69
+32,Rotterdam,Netherlands,0.52,0.55,0.64,0.77,0.42
+33,Varna,Bulgaria,0.28,0.28,0.68,0.62,0.63
+34,Novi Sad,Serbia,0.27,0.26,0.6,0.5,0.46
+35,Utrecht,Netherlands,0.56,0.5,0.72,0.74,0.31
+36,Berlin,Germany,0.48,0.59,0.59,0.7,0.39
+37,Beirut,Lebanon,0.56,0.17,0.53,0.66,0.94
+38,Austin,United States,0.42,0.86,0.64,0.71,0.36
+39,Singapore,Singapore,0.57,0.56,0.67,0.71,0.33
+40,Toronto,Canada,0.5,0.57,0.6,0.76,0.38
+41,Auckland,New Zealand,0.57,0.54,0.54,0.73,0.3
+42,Podgorica,Montenegro,,,,,
+43,Vancouver,Canada,0.51,0.62,0.64,0.75,0.24
+44,Tokyo,Japan,0.61,0.51,0.77,0.81,0.43
+45,Victoria,Canada,0.48,0.58,0.65,0.7,0.15
+46,Winnipeg,Canada,0.48,0.62,0.43,0.69,0.37
+47,Boston,United States,0.6,0.66,0.64,0.75,0.27
+48,Chicago,United States,0.54,0.71,0.35,0.66,0.44
+49,Almaty,Kazakhstan,0.2,0.23,0.34,0.48,0.78
+50,Oslo,Norway,0.71,0.55,0.65,0.76,0.24
+51,Frankfurt,Germany,0.5,0.69,0.58,0.74,0.38
+52,Bratislava,Slovakia,0.35,0.39,0.69,0.58,0.41
+53,Dallas,United States,0.43,0.94,0.5,0.66,0.42
+54,Zagreb,Croatia,0.36,0.33,0.78,0.66,0.32
+55,Hamburg,Germany,0.5,0.55,0.57,0.75,0.31
+56,Hamilton,Canada,0.46,0.53,0.48,0.81,0.53
+57,Kraków,Poland,0.29,0.31,0.74,0.59,0.71
+58,Riga,Latvia,0.37,0.31,0.62,0.61,0.38
+59,Gdańsk,Poland,0.3,0.28,0.68,0.5,0.45
+60,Santiago,Chile,0.34,0.22,0.45,0.66,0.7
+61,Nairobi,Kenya,0.26,0.17,0.39,0.57,0.8
+62,Abu Dhabi,United Arab Emirates,0.4,0.61,0.88,0.71,0.46
+63,Houston,United States,0.44,0.91,0.36,0.72,0.56
+64,Tbilisi,Georgia,0.19,0.18,0.77,0.53,0.75
+65,Dubai,United Arab Emirates,0.45,0.56,0.83,0.67,0.51
+66,Bogotá,Colombia,0.22,0.15,0.37,0.64,0.7
+67,Brno,Czechia,0.33,0.4,0.73,0.74,0.43
+68,Munich,Germany,0.55,0.6,0.82,0.78,0.25
+69,Poznań,Poland,0.29,0.28,0.72,0.55,0.58
+70,Las Vegas,United States,0.46,0.73,0.44,0.56,0.53
+71,London,United Kingdom,0.58,0.53,0.47,0.71,0.59
+72,Los Angeles,United States,0.55,0.66,0.52,0.61,0.66
+73,Panama City,Panama,0.39,0.21,0.53,0.59,0.65
+74,Seoul,South Korea,0.59,0.47,0.74,0.82,0.58
+75,Warsaw,Poland,0.31,0.35,0.74,0.61,0.6
+76,Prague,Czechia,0.35,0.4,0.76,0.75,0.35
+77,Wrocław,Poland,0.29,0.3,0.73,0.58,0.61
+78,Kuala Lumpur,Malaysia,0.28,0.41,0.35,0.67,0.67
+79,New York City,United States,0.67,0.67,0.53,0.62,0.58
+80,Copenhagen,Denmark,0.65,0.57,0.72,0.78,0.21
+81,Ljubljana,Slovenia,0.42,0.37,0.79,0.66,0.23
+82,Chandīgarh,India,,,,,
+83,Colombo,Sri Lanka,0.23,0.13,0.6,0.72,0.61
+84,Kaunas,Lithuania,0.31,0.37,0.62,0.74,0.26
+85,Athens,Greece,0.41,0.28,0.48,0.56,0.57
+86,Phoenix,United States,0.44,0.77,0.48,0.67,0.57
+87,Hong Kong,Hong Kong,0.53,0.42,0.78,0.66,0.67
+88,Portland,United States,0.52,0.67,0.51,0.74,0.31
+89,Lisbon,Portugal,0.37,0.31,0.72,0.72,0.36
+90,Beijing,China,0.32,0.38,0.66,0.65,0.85
+91,Cape Town,South Africa,0.28,0.45,0.26,0.71,0.39
+92,Tirana,Albania,0.28,0.18,0.61,0.49,0.88
+93,Porto,Portugal,0.36,0.27,0.64,0.75,0.35
+94,Durban,South Africa,0.27,0.43,0.19,0.58,0.52
+95,Budapest,Hungary,0.3,0.34,0.64,0.49,0.54
+96,Vilnius,Lithuania,0.33,0.39,0.72,0.72,0.24
+97,Johannesburg,South Africa,0.31,0.47,0.19,0.6,0.62
+98,Barcelona,Spain,0.44,0.38,0.54,0.78,0.65
+99,San Diego,United States,0.53,0.75,0.63,0.7,0.35
+100,San Francisco,United States,0.62,0.85,0.44,0.65,0.47
+101,Lima,Peru,0.26,0.18,0.3,0.59,0.84
+102,Seattle,United States,0.6,0.81,0.51,0.73,0.29
+103,Braşov,Romania,,,,,
+104,Bucharest,Romania,0.29,0.32,0.72,0.54,0.76
+105,Tashkent,Uzbekistan,,,,,
+106,Ahmadābād,India,0.18,0.24,0.7,0.7,0.72
+107,Cluj-Napoca,Romania,0.27,0.34,0.79,0.65,0.43
+108,Madrid,Spain,0.44,0.41,0.71,0.79,0.53
+109,Tallinn,Estonia,0.39,0.4,0.78,0.71,0.23
+110,Bangalore,India,0.19,0.45,0.46,0.66,0.83
+111,Iaşi,Romania,0.26,0.29,0.71,0.58,0.58
+112,Chennai,India,0.17,0.32,0.6,0.72,0.75
+113,Delhi,India,0.19,0.28,0.41,0.67,0.91
+114,Gurgaon,India,0.22,0.5,0.43,0.65,0.92
+115,Valencia,Spain,0.37,0.46,0.74,0.81,0.46
+116,Vienna,Austria,0.48,0.58,0.75,0.79,0.18
+117,Hyderābād,India,0.18,0.32,0.56,0.66,0.76
+118,Montevideo,Uruguay,0.34,0.21,0.46,0.68,0.49
+119,Tel Aviv,Israel,0.62,0.43,0.74,0.75,0.47
+120,Timişoara,Romania,0.26,0.42,0.76,0.73,0.58
+121,Taipei,Taiwan,0.45,0.39,0.87,0.87,0.49
+122,Kolkāta,India,0.18,0.26,0.52,0.58,0.78
+123,Skopje,Macedonia,0.25,0.22,0.57,0.56,0.83
+124,Shanghai,China,0.35,0.37,0.66,0.61,0.77
+125,Bangkok,Thailand,0.37,0.2,0.59,0.77,0.77
+126,Mumbai,India,0.2,0.28,0.57,0.66,0.83
+127,Reykjavík,Iceland,0.66,0.47,0.78,0.67,0.15
+128,Amman,Jordan,0.37,0.21,0.61,0.65,0.76
+129,Pune,India,0.18,0.32,0.59,0.66,0.71
+130,Stockholm,Sweden,0.58,0.54,0.55,0.67,0.2
+131,Buenos Aires,Argentina,0.26,0.24,0.37,0.68,0.52
+132,Minsk,Belarus,0.21,0.22,0.38,0.46,0.41
+133,San José,Costa Rica,0.35,0.29,0.45,0.63,0.52
+134,Casablanca,Morocco,0.27,0.2,0.45,0.44,0.83
+135,Łódź,Poland,0.28,0.3,0.58,0.54,0.6
+136,Montréal,Canada,0.46,0.57,0.71,0.65,0.33
+137,São Paulo,Brazil,0.24,0.22,0.3,0.58,0.8
+138,Gothenburg,Sweden,0.54,0.56,0.54,0.69,0.21
+139,Dublin,Ireland,0.57,0.45,0.5,0.52,0.4
+140,Moscow,Russia,0.28,0.31,0.61,0.63,0.57
+141,Santo Domingo,Dominican Republic,,,,,
+142,Adelaide,Australia,0.54,0.67,0.71,0.81,0.18
+143,Zürich,Switzerland,0.9,0.79,0.84,0.76,0.17
+144,Yerevan,Armenia,0.21,0.18,0.76,0.53,0.57
+145,Manila,Philippines,0.29,0.12,0.36,0.63,0.9
+146,Brisbane,Australia,0.56,0.65,0.65,0.82,0.22
+147,Jakarta,Indonesia,0.29,0.16,0.46,0.57,0.84
+148,Ankara,Turkey,0.21,0.26,0.6,0.69,0.66
+149,Lviv,Ukraine,0.19,0.2,0.59,0.59,0.53
+150,Novosibirsk,Russia,0.21,0.23,0.53,0.55,0.69
+151,Bursa,Turkey,0.21,0.22,0.72,0.79,0.44
+152,Brussels,Belgium,0.53,0.58,0.49,0.75,0.62
+153,Jerusalem,Israel,,,,,
+154,Melbourne,Australia,0.55,0.68,0.56,0.75,0.26
+155,Perth,Australia,0.56,0.66,0.58,0.78,0.23
+156,Sydney,Australia,0.59,0.64,0.66,0.78,0.27
+157,Alexandria,Egypt,,,,,
+158,Quito,Ecuador,0.29,0.19,0.41,0.68,0.66
+159,Canberra,Australia,0.56,0.63,0.78,0.81,0.14
+160,Wellington,New Zealand,0.52,0.64,0.72,0.75,0.14
+161,Raleigh,United States,0.47,0.83,0.66,0.76,0.23
+162,The Hague,Netherlands,0.48,0.62,0.75,0.78,0.2
+163,Madison,United States,0.46,0.75,0.67,0.79,0.2
+164,Columbus,United States,0.49,0.81,0.57,0.74,0.25
+165,Charlotte,United States,0.48,0.8,0.56,0.74,0.28
+166,Geneva,Switzerland,0.88,0.73,0.73,0.73,0.26
+167,Genoa,Italy,0.53,0.35,0.57,0.71,0.54
+168,Richmond,United States,0.46,0.71,0.55,0.74,0.32
+169,Bergen,Norway,0.69,0.58,0.72,0.76,0.21
+170,Luxembourg,Luxembourg,0.6,0.67,0.72,0.75,0.21
+171,Buffalo,United States,0.49,0.63,0.55,0.77,0.25
+172,Quebec City,Canada,0.45,0.62,0.85,0.71,0.29
+173,Kansas City,United States,0.46,0.76,0.41,0.79,0.32
+174,Edinburgh,United Kingdom,0.51,0.52,0.69,0.81,0.28
+175,Muscat,Oman,0.35,0.6,0.79,0.6,0.37
+176,San Jose,United States,0.52,0.88,0.53,0.73,0.47
+177,Reno,United States,0.45,0.77,0.54,0.62,0.32
+178,Belfast,United Kingdom,0.44,0.56,0.6,0.72,0.28
+179,Düsseldorf,Germany,0.48,0.6,0.69,0.72,0.33
+180,Liverpool,United Kingdom,0.47,0.55,0.56,0.86,0.3
+181,Tampa,United States,0.53,0.69,0.51,0.69,0.3
+182,St. Louis,United States,0.45,0.8,0.3,0.81,0.38
+183,Glasgow,United Kingdom,0.46,0.62,0.56,0.81,0.35
+184,Cincinnati,United States,0.42,0.74,0.52,0.69,0.44
+185,Nashville,United States,0.48,0.75,0.52,0.64,0.36
+186,Indianapolis,United States,0.44,0.8,0.42,0.73,0.42
+187,Jacksonville,United States,0.46,0.74,0.42,0.69,0.39
+188,Cambridge,United Kingdom,0.5,0.49,0.72,0.74,0.32
+189,San Antonio,United States,0.43,0.7,0.51,0.72,0.45
+190,Tucson,United States,0.45,0.63,0.49,0.59,0.26
+191,Minneapolis,United States,0.55,0.75,0.48,0.78,0.27
+192,Kelowna,Canada,0.45,0.58,0.5,0.75,0.22
+193,Spokane,United States,0.49,0.59,0.46,0.64,0.2
+194,Graz,Austria,0.53,0.49,0.74,0.78,0.37
+195,Sacramento,United States,0.51,0.68,0.51,0.7,0.45
+196,Albuquerque,United States,0.44,0.69,0.3,0.67,0.25
+197,Cork,Ireland,0.57,0.48,0.66,0.58,0.24
+198,Halifax,Canada,0.51,0.54,0.6,0.7,0.23
+199,Leeds,United Kingdom,0.44,0.6,0.58,0.83,0.46
+200,Pittsburgh,United States,0.53,0.67,0.62,0.75,0.45
+201,Stuttgart,Germany,0.48,0.63,0.71,0.72,0.45
+202,Orlando,United States,0.46,0.64,0.48,0.62,0.36
+203,Denver,United States,0.49,0.78,0.57,0.69,0.43
+204,Anchorage,United States,0.61,0.72,0.37,0.61,0.17
+205,Salt Lake City,United States,0.43,0.84,0.68,0.71,0.63
+206,Atlanta,United States,0.51,0.8,0.38,0.67,0.45
+207,Washington,United States,0.56,0.75,0.42,0.71,0.39
+208,Mangalore,India,0.16,0.36,0.75,0.77,0.39
+209,Mississauga,Canada,0.48,0.57,0.58,0.71,0.24
+210,Oakland,United States,0.6,0.62,0.36,0.79,0.35
+211,Cologne,Germany,0.48,0.59,0.57,0.75,0.41
+212,Cleveland,United States,0.5,0.53,0.35,0.83,0.37
+213,Honolulu,United States,0.64,0.51,0.56,0.72,0.37
+214,Bristol,United Kingdom,0.5,0.49,0.59,0.74,0.45
+215,Doha,Qatar,0.43,0.59,0.88,0.73,0.6
+216,Baltimore,United States,0.49,0.68,0.25,0.77,0.5
+217,Antwerp,Belgium,0.53,0.52,0.63,0.81,0.61
+218,Miami,United States,0.52,0.56,0.47,0.63,0.39
+219,Regina,Canada,0.48,0.64,0.47,0.68,0.37
+220,Lyon,France,0.55,0.49,0.55,0.77,0.51
+221,Milwaukee,United States,0.54,0.52,0.31,0.66,0.3
+222,Manchester,United Kingdom,0.48,0.58,0.44,0.78,0.53
+223,Haifa,Israel,0.57,0.51,0.73,0.74,0.75
+224,Birmingham,United Kingdom,0.47,0.5,0.4,0.74,0.5
+225,Riyadh,Saudi Arabia,0.35,0.57,0.73,0.65,0.65
+226,Sharjah,United Arab Emirates,0.35,0.53,0.84,0.6,0.49
+227,Limassol,Cyprus,0.47,0.33,0.67,0.49,0.55
+228,Jeddah,Saudi Arabia,0.34,0.48,0.7,0.58,0.69
+229,Nizhniy Novgorod,Russia,0.23,0.22,0.68,0.76,0.34
+230,Philadelphia,United States,0.53,0.57,0.38,0.69,0.52
+231,Bologna,Italy,0.51,0.36,0.55,0.79,0.54
+232,Brasília,Brazil,0.23,0.33,0.38,0.49,0.34
+233,Islamabad,Pakistan,0.16,0.19,0.71,0.64,0.43
+234,Nicosia,Cyprus,0.46,0.38,0.67,0.52,0.65
+235,Manama,Bahrain,0.39,0.33,0.78,0.67,0.61
+236,Curitiba,Brazil,0.2,0.18,0.37,0.66,0.32
+237,Thiruvananthapuram,India,0.14,0.43,0.6,0.56,0.56
+238,Pretoria,South Africa,0.3,0.5,0.18,0.67,0.56
+239,Campinas,Brazil,0.23,0.24,0.34,0.61,0.45
+240,San Juan,Puerto Rico,0.48,0.49,0.31,0.6,0.51
+241,Turin,Italy,0.49,0.39,0.5,0.67,0.71
+242,Nur-Sultan,Kazakhstan,0.22,0.27,0.66,0.67,0.47
+243,Coimbatore,India,0.16,0.24,0.61,0.72,0.62
+244,Detroit,United States,0.46,0.48,0.27,0.63,0.58
+245,Medellín,Colombia,0.21,0.18,0.49,0.76,0.63
+246,Porto Alegre,Brazil,0.21,0.2,0.25,0.62,0.56
+247,Kuwait City,Kuwait,0.33,0.44,0.68,0.59,0.67
+248,Lahore,Pakistan,0.15,0.17,0.6,0.65,0.79
+249,Belo Horizonte,Brazil,0.21,0.16,0.36,0.63,0.53
+250,Guatemala City,Guatemala,0.31,0.17,0.38,0.62,0.72
+251,Dnipro,Ukraine,0.19,0.21,0.47,0.51,0.82
+252,Shenzhen,China,0.34,0.36,0.67,0.58,0.63
+253,Karachi,Pakistan,0.15,0.18,0.46,0.58,0.9
+254,Recife,Brazil,0.21,0.14,0.24,0.62,0.7
+255,Caracas,Venezuela,0.34,0.1,0.15,0.39,0.74
+256,Rio de Janeiro,Brazil,0.22,0.16,0.22,0.44,0.67
+257,Dhaka,Bangladesh,0.23,0.15,0.35,0.41,0.93
+258,Lagos,Nigeria,0.24,0.07,0.35,0.47,0.88
+259,Tehran,Iran,0.27,0.1,0.46,0.53,0.82
+260,Algiers,Algeria,,,,,
+261,Nassau,Bahamas,,,,,
+262,Belize City,Belize,,,,,
+263,Cotonou,Benin,,,,,
+264,La Paz,Bolivia,,,,,
+265,Bangui,Central African Republic,,,,,
+266,Chengdu,China,,,,,
+267,Guangzhou,China,,,,,
+268,Shenyang,China,,,,,
+269,Brazzaville,Congo,,,,,
+270,Havana,Cuba,,,,,
+271,Guayaquil,Ecuador,,,,,
+272,Addis Ababa,Ethiopia,,,,,
+273,Bordeaux,France,,,,,
+274,Libreville,Gabon,,,,,
+275,Banjul,Gambia,,,,,
+276,Conakry,Guinea,,,,,
+277,Bissau,Guinea-Bissau,,,,,
+278,Port-au-Prince,Haiti,,,,,
+279,Tegucigalpa,Honduras,,,,,
+280,Abidjan,Côte d'Ivoire,,,,,
+281,Ōsaka,Japan,,,,,
+282,Sapporo,Japan,,,,,
+283,Bishkek,Kyrgyzstan,,,,,
+284,Vientiane,Laos,,,,,
+285,Antananarivo,Madagascar,,,,,
+286,Ulaanbaatar,Mongolia,,,,,
+287,Rabat,Morocco,,,,,
+288,Maputo,Mozambique,,,,,
+289,Managua,Nicaragua,,,,,
+290,Dhahran,Saudi Arabia,,,,,
+291,Dakar,Senegal,,,,,
+292,Bilbao,Spain,,,,,
+293,Paramaribo,Suriname,,,,,
+294,Bern,Switzerland,,,,,
+295,Damascus,Syria,,,,,
+296,Dushanbe,Tajikistan,,,,,
+297,Dar es Salaam,Tanzania,,,,,
+298,Lomé,Togo,,,,,
+299,Ashgabat,Turkmenistan,,,,,
+300,Akron,United States,,,,,
+301,Allentown,United States,,,,,
+302,Amarillo,United States,,,,,
+303,Asheville,United States,,,,,
+304,Atlantic City,United States,,,,,
+305,Billings,United States,,,,,
+306,Bismarck,United States,,,,,
+307,Boise,United States,,,,,
+308,Caribou,United States,,,,,
+309,Casper,United States,,,,,
+310,Chattanooga,United States,,,,,
+311,Cheyenne,United States,,,,,
+312,Colorado Springs,United States,,,,,
+313,Corpus Christi,United States,,,,,
+314,El Paso,United States,,,,,
+315,Elkins,United States,,,,,
+316,Eugene,United States,,,,,
+317,Fairbanks,United States,,,,,
+318,Fargo,United States,,,,,
+319,Flint,United States,,,,,
+320,Fort Smith,United States,,,,,
+321,Fort Wayne,United States,,,,,
+322,Grand Junction,United States,,,,,
+323,Green Bay,United States,,,,,
+324,Greensboro,United States,,,,,
+325,Juneau,United States,,,,,
+326,Lake Charles,United States,,,,,
+327,Little Rock,United States,,,,,
+328,Lubbock,United States,,,,,
+329,Macon,United States,,,,,
+330,Miami Beach,United States,,,,,
+331,St. Paul,United States,,,,,
+332,Mobile,United States,,,,,
+333,New Orleans,United States,,,,,
+334,North Platte,United States,,,,,
+335,Oklahoma City,United States,,,,,
+336,Omaha,United States,,,,,
+337,Paducah,United States,,,,,
+338,Pocatello,United States,,,,,
+339,Pueblo,United States,,,,,
+340,Rapid City,United States,,,,,
+341,San Angelo,United States,,,,,
+342,Sault Ste. Marie,United States,,,,,
+343,Shreveport,United States,,,,,
+344,Sioux City,United States,,,,,
+345,Sioux Falls,United States,,,,,
+346,South Bend,United States,,,,,
+347,Tallahassee,United States,,,,,
+348,St. Petersburg,United States,,,,,
+349,Toledo,United States,,,,,
+350,Topeka,United States,,,,,
+351,Tulsa,United States,,,,,
+352,Tupelo,United States,,,,,
+353,Waco,United States,,,,,
+354,West Palm Beach,United States,,,,,
+355,Wichita,United States,,,,,
+356,Wichita Falls,United States,,,,,
+357,Wilkes-Barre,United States,,,,,
+358,Yakima,United States,,,,,
+359,Youngstown,United States,,,,,
+360,Kampala,Uganda,,,,,
+361,Lille,France,,,,,
+362,Nantes,France,,,,,
+363,Marseille,France,,,,,
+364,Montpellier,France,,,,,
+365,Groningen,Netherlands,,,,,
+366,Seville,Spain,,,,,
+367,Granada,Spain,,,,,
+368,Toulouse,France,,,,,
+369,Brugge,Belgium,,,,,
+370,Innsbruck,Austria,,,,,
+371,Venice,Italy,,,,,
