@@ -22,11 +22,13 @@ data = pd.read_csv('df_final.csv')
 city_info_num = data.copy()
 
 # name mapper
-with open('mapping_dict_final_binary.json', 'w') as f:
+with open('mapping_dict_final_binary.json', 'r') as f:
     dimension_mapper_binary = json.load(f)
 
-with open('mapping_dict_final.json', 'w') as f:
+with open('mapping_dict_final.json', 'r') as f:
     dimension_mapper = json.load(f)
+
+    print('dimension_mapper: ', dimension_mapper)
 
 colnames_to_lower = dict(zip(
     city_info_num.drop(columns=["City", "Country", "Lat", "Long"]).columns,
@@ -270,7 +272,7 @@ def update_custom_dims_plot(location, dims_selected):
         dims_selected = ['tourism']
     if len(location) == 0:
         return go.Figure()
-    fig = custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg)
+    fig = custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg, dimension_mapper)
     return fig
 
 @app.callback(Output('heatmap', 'figure'),
@@ -494,7 +496,7 @@ def update_map(filter_list, width, height):
 md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
        'Transport', 'Health', 'Food', 'Internet Speed',
        'Access to Contraception', 'Gender Equality', 'Immigration Tolerance',
-       'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']]
+       'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']].copy()
     
 for column in md.columns.tolist()[1:]:
     md['{column}_q'.format(column=column)] = pd.qcut(md[column].rank(method='first'), 4, labels=False)

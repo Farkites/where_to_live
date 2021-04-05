@@ -41,15 +41,18 @@ def custom_dims_plot_deprecated(location, dims_selected, city_info_num, city_inf
     return fig
 
 
-def custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg):
+def custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg, dimension_mapper):
     dims_selected = [re.sub('high |low ', '', dim) for dim in dims_selected]
     print(dims_selected)
+    dimnames = [dimension_mapper[dim] for dim in dims_selected]
+    print(dimnames)
+
     vals_city = city_info_num.loc[city_info_num['City'] == location, dims_selected].values.tolist()[0]
     vals_agg = city_info_num_agg[dims_selected].values.tolist()
 
     fig = make_subplots(
         rows=len(dims_selected), cols=1,
-        subplot_titles=(dims_selected)
+        subplot_titles=dimnames
     )
     legend = [False for _ in range(len(dims_selected))]
     legend[0] = True
@@ -57,8 +60,7 @@ def custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg):
     median_name = 'All cities (median)'
     selected_name = 'Selected city'
 
-    for idx, dim in enumerate(dims_selected):
-
+    for idx, dim in enumerate(dimnames):
         # crate traces
         trace1 = go.Bar(
             y=[dim],
