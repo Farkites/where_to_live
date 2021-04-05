@@ -130,7 +130,8 @@ selected_location_layout = html.Div([
 
     html.Div([
         html.Div([
-            html.H4("... Common indices"),
+            html.H4("... Common indices and Quartiles analysis"),
+            html.H6("Bubble size is GDP per capita"),
             dcc.Graph(id='bubble'),
         ],
             className="plot_container_child",
@@ -544,9 +545,8 @@ def update_map(filter_list, width, height):
     return fig
 
 
-md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
-
-       'Transport', 'Health', 'Food', 'Internet Speed',
+md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing', 'Logged GDP per capita',
+       'Transport', 'Health', 'Food', 'Internet Speed', 'Generosity', 'Freedom to make life choices',
        'Access to Contraception', 'Gender Equality', 'Immigration Tolerance',
        'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']].copy()
 
@@ -565,16 +565,26 @@ color = np.zeros(len(md), dtype='uint8')
 colorscale = [[0, 'gray'], [1, 'rgb(243,203,70)']]
 
 
-size = md['Employment']*20
+size = 10 ** (md['Logged GDP per capita'] / 10)
+size = size.round(5)
+customdata=np.stack(
+  (pd.Series(md.index),
+   md['City'],
+   size*1000),
+  axis=-1
+)
 
 # bubble plot related indicators
 def build_bubble_figure(width, height):
     # Build figure as FigureWidget
     fig = go.Figure(
-        data=[go.Scatter(x=md['Health'], y=md['Housing'],
+        data=[go.Scatter(x=md['Freedom to make life choices'], y=md['Generosity'],
         text=md['City'],
-        hovertemplate=md['City'],
-        marker={'color': '#986EA8','size':size}, mode='markers', selected={'marker': {'color': 'rgb(243,203,70)'}},
+        customdata=customdata,
+        hovertemplate="""<extra></extra>
+        <em>%{customdata[1]}</em><br>
+        GDP per capita = %{customdata[2]} €""",
+        marker={'color': '#986EA8', 'size': size}, mode='markers', selected={'marker': {'color': 'rgb(243,203,70)'}},
         unselected={'marker': {'opacity': 0.3}}), go.Parcats(
             domain={'y': [0, 0.4]},
 
@@ -586,8 +596,8 @@ def build_bubble_figure(width, height):
     fig.update_layout(
             font_color='white',
             font_size=9,
-            xaxis={'title': 'Employment'},
-            yaxis={'title': 'Health', 'domain': [0.6, 1]},
+            xaxis={'title': 'Freedom to make life choices'},
+            yaxis={'title': 'Generosity', 'domain': [0.6, 1]},
             dragmode='lasso', hovermode='closest',
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
