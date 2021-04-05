@@ -7,6 +7,7 @@ import numpy as np
 from dash.dependencies import ClientsideFunction, Input, Output, State
 import plotly.express as px
 from ipywidgets import widgets
+from helper.plots import custom_dims_plot
 
 import urllib.request, json
 
@@ -21,8 +22,17 @@ filters = [dict(label=parameter, value=parameter) for parameter in preferences_l
 
 # datasets needed for plots
 data = pd.read_csv('df_final.csv')
+city_info_num = data.copy()
 
+colnames_to_lower = dict(zip(
+    city_info_num.drop(columns=["City", "Country", "Lat", "Long"]).columns,
+    map(str.lower, city_info_num.drop(columns=["City", "Country", "Lat", "Long"]).columns)
 
+))
+city_info_num.rename(columns=colnames_to_lower, inplace=True)
+print(city_info_num.columns)
+
+city_info_num_agg = city_info_num.drop(columns=['City', 'Country']).apply(np.median)
 
 filters_layout = html.Div([
     html.Div([
@@ -124,6 +134,8 @@ selected_location_layout = html.Div([
     dcc.Graph(id='funnel-graph'),
     #dcc.Graph(id='radar'),
     #dcc.Graph(id='bubble')
+    dcc.Graph(id='custom_dims_plot'),
+
 ],
     id="selected_location",
     style={"display": "none"}
@@ -210,10 +222,11 @@ x_close_selection_clicks = -1
 
 @app.callback(Output('selected_location', "style"),
               Output('title_selected_location', "children"),
-              #Output('radar', "figure"),
+              Output('custom_dims_plot', "figure"),
               [Input('map', 'clickData')],
-              Input('x_close_selection', 'n_clicks'))
-def update_selected_location(clickData, n_clicks):
+              Input('x_close_selection', 'n_clicks'),
+              [Input('filters_drop', 'value')])
+def update_selected_location(clickData, n_clicks, dims_selected):
     global selected_location
     global x_close_selection_clicks
     location = ""
@@ -235,9 +248,14 @@ def update_selected_location(clickData, n_clicks):
         style = {'display': 'none'}
         x_close_selection_clicks = n_clicks
 
-    return style, location#, update_radar(location)#, bubble_linked(location)
+    return style, location, update_custom_dims_plot(location, dims_selected)#, bubble_happiness(location)
 
 
+def update_custom_dims_plot(location, dims_selected):
+    if dims_selected is None:
+        dims_selected = ['tourism']
+    fig = custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg)
+    return fig
 
 # radar plot to compare index values
 def update_radar(city):
