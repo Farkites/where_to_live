@@ -57,8 +57,8 @@ def custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg, 
     legend = [False for _ in range(len(dims_selected))]
     legend[0] = True
 
-    median_name = 'All cities (median)'
-    selected_name = 'Selected city'
+    median_name = 'Average'
+    # selected_name = 'Selected city'
 
     for idx, dim in enumerate(dimnames):
         # crate traces
@@ -71,28 +71,28 @@ def custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg, 
                 color='#986EA8' # dark grey #333333
             ),
             showlegend=legend[idx],
-            opacity=1
+            opacity=0.7
 
         )
         trace2 = go.Bar(
 
             y=[dim],
             x=[vals_city[idx]],
-            name=selected_name, legendgroup=selected_name,
+            name=location, legendgroup=location,
             orientation='h',
             marker=dict(
                 color='#F3D576' # purple: #986EA8
             ),
             showlegend=legend[idx],
-            opacity=1
+            opacity=0.7
             )
 
-        fig.add_trace(trace1, row=idx+1, col=1)
         fig.add_trace(trace2, row=idx+1, col=1)
+        fig.add_trace(trace1, row=idx+1, col=1)
 
 
     fig.update_layout(
-        barmode='group', # overlay
+        barmode='overlay', # overlay, group
         legend=dict(
             orientation="h"
             #,
