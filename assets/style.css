@@ -245,18 +245,16 @@ button { /* Style of the buttons*/
     background-color: #333333;
     padding: 10px;
     color: #FFFFFF;
-    opacity: 0.6;
+    opacity: 0.8;
     border-radius: 5px;
-    height: wrap-content;
-    width: wrap-content;
+    height: 78%;
+    width: 72%;
     position: absolute;
-    top: 2%;
-    left: 70%;
+    top: 1%;
+    left: 27%;
     z-index: 1000 !important;
-    overflow: auto;
-    max-height: 90%;
-    max-width: 30%;
 }
+
 #selected_location h3{
     margin: 10px;
 }
@@ -278,7 +276,6 @@ button { /* Style of the buttons*/
 
 #hovered_location{
     background-color: #333333;
-    padding: 10px;
     color: #FFFFFF;
     opacity: 0.8;
     border-radius: 5px;
@@ -286,8 +283,6 @@ button { /* Style of the buttons*/
     width: wrap-content;
     position: absolute;
     z-index:10;
-    top: 50%;
-    left: 70%;
 }
 
 #hovered_location h3{
@@ -318,4 +313,19 @@ button { /* Style of the buttons*/
 
 .author_name, .source{
     font-size: 100% !important;
+}
+
+.plots_container{
+    display: flex;
+}
+.plots_container_child:first-child {
+    margin-right: 20px;
+    width: 66% !important;
+}
+.plots_container_child{
+    flex: 1;
+    width: 33%;
+    float: left;
+    padding: 20px;
+    border: 2px solid red;
 }

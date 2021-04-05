@@ -89,10 +89,10 @@ initial_popup_layout = html.Div([
         ]),
         html.Div([
             html.H6("Sources:"),
-            html.P("asdfasdfajsdhlkansdfmcaksdfasdfasdf", className="source"),
-            html.P("asdfasdvfasdfasxfqwrfasdfasdfvasd", className="source"),
-            html.P("asdfasdvfasdfasdfasdfvgasdfa", className="source"),
-            html.P("Dasdfasdfasdfasdfsvasdfvasdfasdfva", className="source"),
+            html.P("https://www.economist.com/big-mac-index", className="source"),
+            html.P("https://worldhappiness.report/", className="source"),
+            html.P("https://www.nestpick.com/millennial-city-ranking-2018/", className="source"),
+            html.P("https://www.numbeo.com/quality-of-life/rankings.jsp", className="source"),
         ])
     ],
         style={"display": "flex", "align": "right", "bottom": "10%"}
@@ -108,18 +108,8 @@ info_bar_layout = html.Div([
     html.Div([
         html.Div([
             html.H6("Authors:"),
-            html.P("Mario Rodríguez Ibáñez", className="author_name"),
-            html.P("Diogo Acabado", className="author_name"),
-            html.P("Doris Macean", className="author_name"),
-            html.P("Daniel Philippi", className="author_name"),
+            html.P("Mario Rodríguez Ibáñez - Diogo Acabado - Doris Macean - Daniel Philippi",className="author_name"),
         ]),
-        html.Div([
-            html.H6("Sources:"),
-            html.P("asdfasdfajsdhlkansdfmcaksdfasdfasdf", className="source"),
-            html.P("asdfasdvfasdfasxfqwrfasdfasdfvasd", className="source"),
-            html.P("asdfasdvfasdfasdfasdfvgasdfa", className="source"),
-            html.P("Dasdfasdfasdfasdfsvasdfvasdfasdfva", className="source"),
-        ])
     ],
         style={"display": "flex", "align": "right"}
     ),
@@ -135,10 +125,28 @@ selected_location_layout = html.Div([
         html.Span('X', id="x_close_selection")
     ]),
 
-    # dcc.Graph(id='radar'),
-    dcc.Graph(id='bubble'),
-    dcc.Graph(id='custom_dims_plot'),
-    dcc.Graph(id='heatmap')
+    html.Div([
+        html.Div([
+            html.H4("... Common indices"),
+            dcc.Graph(id='bubble'),
+        ],
+            className="plot_container_child",
+        ),
+        html.Div([
+            html.H4("... Selected preferences"),
+            dcc.Graph(id='custom_dims_plot'),
+        ],
+            className="plot_container_child",
+        ),
+    ],
+        className="plots_container"
+    ),
+    html.Div([
+        html.H4("... Average temperature of the city"),
+        dcc.Graph(id='temperature_plot')
+    ],
+        className="",
+    ),
 
 ],
     id="selected_location",
@@ -195,7 +203,6 @@ selections = set()
 @app.callback(Output('initial_popup', 'style'),
               Input('initial_popup', 'n_clicks'))
 def close_initial_popup(n_clicks):
-    show_flex = {'display': 'flex'}
     show_block = {'display': 'block'}
     hide = {'display': 'none'}
     if n_clicks is not None:
@@ -225,25 +232,30 @@ selected_location = ""
 x_close_selection_clicks = -1
 
 
-@app.callback(Output('bubble','clickData'),
-                [Input('map', 'clickData')])
-def link_data(clickData):
-    if clickData is not None:
-            location = clickData['points'][0]['text']
-    ###### 
+
+@app.callback(Output('bubble', 'clickData'),
+              [Input('map', 'clickData')])
+def update_bubble_selection(click_map):
+    point = click_map
+    return point
+
+
 
 @app.callback(Output('selected_location', "style"),
               Output('title_selected_location', "children"),
               Output('custom_dims_plot', "figure"),
-              Output('bubble','figure'),
+              Output('bubble', 'figure'),
+              Output('temperature_plot', 'figure'),
               [Input('map', 'clickData')],
               Input('x_close_selection', 'n_clicks'),
               [Input('filters_drop', 'value')],
-              [Input('bubble', 'selectedData'),
-                Input('bubble', 'clickData')],
-                [State('bubble','figure')])
+              [Input('bubble', 'selectedData')],
+              [Input('bubble', 'clickData')],
+              Input('width', 'n_clicks'),
+              Input('height', 'n_clicks'),
+              [State('bubble', 'figure')])
+def update_selected_location(clickData, n_clicks, dims_selected, bubbleSelect, bubbleClick, width, height, bubbleState):
 
-def update_selected_location(clickData, n_clicks, dims_selected,bubbleSelect,bubbleClick,bubbleState):
     global selected_location
     global x_close_selection_clicks
     location = ""
@@ -266,58 +278,75 @@ def update_selected_location(clickData, n_clicks, dims_selected,bubbleSelect,bub
         style = {'display': 'none'}
         selected_location = ""
         x_close_selection_clicks = n_clicks
-    
+
     if bubbleSelect is not None or bubbleClick is not None or bubbleState is not None:
-        bubble_fig = update_color(bubbleSelect, bubbleClick, bubbleState) 
+        bubble_fig = update_color(bubbleSelect, bubbleClick, bubbleState, width, height)
     else:
-        bubble_fig = build_figure()
+        bubble_fig = build_bubble_figure(width, height)
+    return style, "Compare "+location+" with other cities using...", update_custom_dims_plot(location, dims_selected, width,
+                                                    height), bubble_fig, update_temperature(location, width, height)
 
-    return style, location, update_custom_dims_plot(location, dims_selected), bubble_fig
+
+def update_temperature(city, width, height):
+    df = temperature_df
+    row = df[df['City'] == city]
+
+    avg = df.groupby('Month').mean().reset_index()
 
 
-def update_custom_dims_plot(location, dims_selected):
-    if dims_selected is None or len(dims_selected) == 0:
-        dims_selected = ['tourism']
-    if len(location) == 0:
-        return go.Figure()
-    fig = custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg, dimension_mapper)
-    return fig
+    trace0 = go.Scatter(x=row['Month'],
+                        y=row['AvgTemperature'],
+                        name=city,
+                        marker=dict(color='#f3d576'))
 
-@app.callback(Output('heatmap', 'figure'),
-              Input('url', 'href'))
-def update_heatmap(_):
-    x = temperature_df['City'].unique()
-    y = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    z = [[round(temperature_df.loc[(temperature_df['City'] == temperature_df['City'].unique()[j]) \
-                                   & (temperature_df['Month'] == i), 'AvgTemperature'].values[0], 1)
-          for j in range(len(x))] for i in range(1, len(y) + 1)]
+    trace1 = go.Scatter(x=avg['Month'],
+                        y=avg['AvgTemperature'],
+                        name='Average Temperature',
+                        marker=dict(color='#d1d1cf'))
 
-    hovertext = list()
-    for xi, xx in enumerate(x):
-        hovertext.append(list())
-        for yi, yy in enumerate(y):
-            hovertext[-1].append('City: {}<br />Month: {}<br />Temperature: {}'.format(xx, yy, z[yi][xi]))
+    layout = go.Layout(xaxis=dict(showline=True,
+                                  linecolor='white',
+                                  showgrid=False,
+                                  tickmode='array',
+                                  tickvals=[i for i in range(1, 13)],
+                                  ticktext=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']),
+                       yaxis=dict(showline=True,
+                                  linecolor='white',
+                                  showgrid=False))
 
-    data = [go.Heatmap(x=temperature_df['Month'],
-                       y=temperature_df['City'],
-                       z=temperature_df['AvgTemperature'].values.tolist(), zmin=-20, zmax=40,
-                       colorscale='RdBu',
-                       reversescale=True,
-                       hoverinfo='text',
-                       colorbar=dict(thickness=10),
-                       text=hovertext)]
-
-    layout = go.Layout(title='Avg. Temperature by City and Month',
-                       xaxis=dict(
-                           tickmode='array',
-                           tickvals=[i for i in range(1, 13)],
-                           ticktext=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']),
-                       )
+    data = [trace0, trace1]
 
     fig = go.Figure(data=data, layout=layout)
 
+    fig.update_yaxes(ticksuffix="°C")
+
+    fig.update_layout(
+        height=int(height*0.2),
+        width=int(width*0.7),
+        margin=dict(
+            l=120,  # left margin
+            r=120,  # right margin
+            b=0,  # bottom margin
+            t=0,  # top margin
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(
+            family="Open sans",
+            size=12,
+            color="White"
+        ))
+
+    return fig
+
+
+def update_custom_dims_plot(location, dims_selected, width, height):
+    if dims_selected is None or len(dims_selected) ==0:
+        dims_selected = ['tourism']
+    if len(location) == 0:
+        return go.Figure()
+    fig = custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg, dimension_mapper, width, height)
     return fig
 
 
@@ -347,6 +376,7 @@ def update_hovered_location(hoverData):
 
     return style, update_radar(location), location
 
+
 # radar plot to compare index values
 def update_radar(city):
     # creating a subset dataframe
@@ -374,17 +404,6 @@ def update_radar(city):
     fig = go.Figure()
 
     fig.add_trace(go.Barpolar(
-        r=df.mean(axis=0).tolist(),
-        theta=cat,
-        name='Average',
-        marker_color=['#986EA8'] * 6,
-        marker_line_color='white',
-        hoverinfo=['theta'] * 9,
-        opacity=0.7,
-        base=0
-    ))
-
-    fig.add_trace(go.Barpolar(
         r=Row_list,
         theta=cat,
         name=city,
@@ -395,21 +414,42 @@ def update_radar(city):
         base=0
     ))
 
+    fig.add_trace(go.Barpolar(
+        r=df.mean(axis=0).tolist(),
+        theta=cat,
+        name='Average',
+        marker_color=['#986EA8'] * 6,
+        marker_line_color='white',
+        hoverinfo=['theta'] * 9,
+        opacity=0.7,
+        base=0
+    ))
+
     fig.update_layout(
         title='',
         font_size=12,
-        #hoverlabel = 
+        margin=dict(
+            l=110,  # left margin
+            r=120,  # right margin
+            b=0,  # bottom margin
+            t=0,  # top margin
+        ),
+        height=150,
+        width=300,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font_color="white",
+        legend=dict(
+            orientation="h",
+        ),
         polar=dict(
-        bgcolor='rgba(0,0,0,0)',
-        angularaxis=dict(linewidth=3, showline=False,showticklabels=True),
-        radialaxis=dict(showline=False,
-                        showticklabels=False,
-                linewidth=2,
-                gridcolor='rgba(0,0,0,0)',
-                gridwidth=2)))
+            bgcolor='rgba(0,0,0,0)',
+            angularaxis=dict(linewidth=3, showline=False, showticklabels=True),
+            radialaxis=dict(showline=False,
+                            showticklabels=False,
+                            linewidth=2,
+                            gridcolor='rgba(0,0,0,0)',
+                            gridwidth=2)))
 
     return fig
 
@@ -501,11 +541,13 @@ def update_map(filter_list, width, height):
 
     return fig
 
+
 md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
+
        'Transport', 'Health', 'Food', 'Internet Speed',
        'Access to Contraception', 'Gender Equality', 'Immigration Tolerance',
        'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']].copy()
-    
+
 for column in md.columns.tolist()[1:]:
     md['{column}.'.format(column=column)] = pd.qcut(md[column].rank(method='first'), 4, labels=False)
 
@@ -520,43 +562,50 @@ dimensions = [dict(values=md[label], label=label) for label in quartiles]
 color = np.zeros(len(md), dtype='uint8')
 colorscale = [[0, 'gray'], [1, 'rgb(243,203,70)']]
 
+
 size = md['Employment']*20
 
-
 # bubble plot related indicators
-def build_figure():
-
+def build_bubble_figure(width, height):
     # Build figure as FigureWidget
     fig = go.Figure(
         data=[go.Scatter(x=md['Health'], y=md['Housing'],
         text=md['City'],
-        hovertemplate=md['City'], 
+        hovertemplate=md['City'],
         marker={'color': '#986EA8','size':size}, mode='markers', selected={'marker': {'color': 'rgb(243,203,70)'}},
         unselected={'marker': {'opacity': 0.3}}), go.Parcats(
-            domain={'y': [0, 0.4]}, 
+            domain={'y': [0, 0.4]},
+
             dimensions=dimensions,
             line={'colorscale': colorscale, 'cmin': 0,
-                'cmax': 1, 'color': color,'shape': 'hspline'})
-        ])
+                  'cmax': 1, 'color': color, 'shape': 'hspline'})
+              ])
 
     fig.update_layout(
             font_color='white',
-            height=800, xaxis={'title': 'Employment'},
+            font_size=9,
+            xaxis={'title': 'Employment'},
             yaxis={'title': 'Health', 'domain': [0.6, 1]},
             dragmode='lasso', hovermode='closest',
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             autosize=False,
-            bargap=0.35)
-    return fig 
+            bargap=0.35,
+            height=int(height * 0.35),
+            width=int(width * 0.45),
+            margin=dict(
+                l=15,  # left margin
+                r=15,  # right margin
+                b=0,  # bottom margin
+                t=0,  # top margin
+            ),
+    )
 
-#app = dash.Dash(prevent_initial_callbacks=True)
-#app.layout = html.Div([dcc.Graph(figure=build_figure(), id="graph")])
+    return fig
 
 
-    # Update color callback
-def update_color(selectedData, clickData, fig):
-        
+# Update color callback
+def update_color(selectedData, clickData, fig, width, height):
     selection = None
 
     # Update selection based on which event triggered the update.
