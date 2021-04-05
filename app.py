@@ -131,7 +131,6 @@ selected_location_layout = html.Div([
         html.Span('X', id="x_close_selection")
     ]),
 
-    dcc.Graph(id='funnel-graph'),
     #dcc.Graph(id='radar'),
     #dcc.Graph(id='bubble')
     dcc.Graph(id='custom_dims_plot'),
@@ -254,6 +253,8 @@ def update_selected_location(clickData, n_clicks, dims_selected):
 def update_custom_dims_plot(location, dims_selected):
     if dims_selected is None:
         dims_selected = ['tourism']
+    if location is None:
+        return None
     fig = custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg)
     return fig
 
