@@ -255,7 +255,7 @@ button { /* Style of the buttons*/
     z-index: 1000 !important;
     overflow: auto;
     max-height: 90%;
-    max-width: 25%;
+    max-width: 30%;
 }
 #selected_location h3{
     margin: 10px;

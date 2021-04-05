@@ -11,14 +11,11 @@ from helper.plots import custom_dims_plot
 
 import urllib.request, json
 
-path_datasets = 'https://raw.githubusercontent.com/nalpalhao/DV_Practival/master/datasets/'
-
-
 city_info_bin = pd.read_csv('data_bool_geo_final.csv')
 preferences_list = list(city_info_bin.drop(columns=["City", "Country", "Lat", "Long"]).columns)
 filters = [dict(label=parameter, value=parameter) for parameter in preferences_list]
 
-
+temperature_df = pd.read_csv('city_temperature.csv')
 
 # datasets needed for plots
 data = pd.read_csv('df_final.csv')
@@ -95,7 +92,6 @@ initial_popup_layout = html.Div([
     id="initial_popup"
 )
 
-
 info_bar_layout = html.Div([
     html.H1("Where to live!", className="title"),
     html.H3("In this dashboard you can indicate your preferences and navigate the map to find the perfect city \
@@ -130,9 +126,10 @@ selected_location_layout = html.Div([
         html.Span('X', id="x_close_selection")
     ]),
 
-    #dcc.Graph(id='radar'),
-    #dcc.Graph(id='bubble')
+    # dcc.Graph(id='radar'),
+    # dcc.Graph(id='bubble')
     dcc.Graph(id='custom_dims_plot'),
+    dcc.Graph(id='heatmap')
 
 ],
     id="selected_location",
@@ -185,6 +182,7 @@ app.layout = html.Div([
 #################
 selections = set()
 
+
 @app.callback(Output('initial_popup', 'style'),
               Input('initial_popup', 'n_clicks'))
 def close_initial_popup(n_clicks):
@@ -228,14 +226,15 @@ def update_selected_location(clickData, n_clicks, dims_selected):
     global selected_location
     global x_close_selection_clicks
     location = ""
-    if clickData is not None:
-        location = clickData['points'][0]['text']
-        if location != selected_location:
+    if clickData is not None or dims_selected is not None:
+        if clickData is not None:
+            location = clickData['points'][0]['text']
+        if len(location) != 0:
             selected_location = location
             style = {'display': 'block'}
         else:
             selected_location = ""
-            location = ""
+            location = selected_location
             style = {'display': 'none'}
     else:
         selected_location = ""
@@ -244,9 +243,10 @@ def update_selected_location(clickData, n_clicks, dims_selected):
 
     if n_clicks != x_close_selection_clicks:
         style = {'display': 'none'}
+        selected_location = ""
         x_close_selection_clicks = n_clicks
 
-    return style, location, update_custom_dims_plot(location, dims_selected)#, bubble_happiness(location)
+    return style, location, update_custom_dims_plot(location, dims_selected)
 
 
 def update_custom_dims_plot(location, dims_selected):
@@ -257,80 +257,19 @@ def update_custom_dims_plot(location, dims_selected):
     fig = custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg)
     return fig
 
-# radar plot to compare index values
-def update_radar(city):
-    # creating a subset dataframe
-    df = data[['City','Cost of Living Index',
-       'Purchasing Power Index', 'Safety Index', 'Health Care Index',
-       'Pollution Index']]
-
-    # categories
-    cat = df.columns[1:].tolist()
-
-    select_df = df[df['City'] == city]
-
-    Row_list = []
-    r=[]
-    # Iterate over each row
-    for index, rows in select_df.iterrows():
-        for i in range(len(cat)):
-            # Create list for the current 
-            r.append(rows[cat[i]])
-
-            # append the list to the final list
-        Row_list.append(r)
-        Row_list=list(np.concatenate(Row_list).flat)
-    
-    fig = go.Figure()
-
-    fig.add_trace(go.Barpolar(
-        r=Row_list,
-        theta=cat,
-        name='',
-        marker_color=['rgb(243,203,70)']*6,
-        marker_line_color='white',
-        hoverinfo=['theta']*9,
-        opacity=0.7,
-        base=0
-    ))
-
-    fig.add_trace(go.Barpolar(
-        r=df.mean(axis=0).tolist(),
-        theta=cat,
-        name='',
-        marker_color=['#d1d1cf']*6,
-        marker_line_color='white',
-        hoverinfo=['theta']*9,
-        opacity=0.7,
-        base=0
-    ))
-
-    fig.update_layout(
-        title='',
-        font_size=12,
-        polar=dict(
-        bgcolor='rgba(0,0,0,0)',
-        angularaxis=dict(linewidth=3, showline=False,showticklabels=True),
-        radialaxis=dict(showline=False,
-                        showticklabels=False,
-                linewidth=2,
-                gridcolor='white',
-                gridwidth=2)))
-
-    return fig
 
 def bubble_linked(city):
     md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
-       'Transport', 'Health', 'Food', 'Internet Speed',
-       'Access to Contraception', 'Gender Equality', 'Immigration Tolerance',
-       'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']]
-    
+               'Transport', 'Health', 'Food', 'Internet Speed',
+               'Access to Contraception', 'Gender Equality', 'Immigration Tolerance',
+               'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']]
+
     for column in md.columns.tolist()[1:]:
         md['{column}_q'.format(column=column)] = pd.qcut(md[column].rank(method='first'), 4, labels=False)
 
     # Build parcats dimensions
-    quartiles = ['Startup_q', 'Internet Speed_q', 'Gender Equality_q','Immigration Tolerance_q','LGBT Friendly_q','Nightscene_q',]
-
+    quartiles = ['Startup_q', 'Internet Speed_q', 'Gender Equality_q', 'Immigration Tolerance_q', 'LGBT Friendly_q',
+                 'Nightscene_q', ]
 
     dimensions = [dict(values=md[label], label=label) for label in quartiles]
 
@@ -338,24 +277,25 @@ def bubble_linked(city):
     color = np.zeros(len(md), dtype='uint8')
     colorscale = [[0, 'gray'], [1, 'firebrick']]
 
-    size = md['Employment']*10
+    size = md['Employment'] * 10
     # Build figure as FigureWidget
     fig = go.FigureWidget(
         data=[go.Scatter(x=md['Food'], y=md['Health'],
-        marker={'color': 'gray','size':size}, mode='markers', selected={'marker': {'color': 'firebrick'}},
-        unselected={'marker': {'opacity': 0.3}}), go.Parcats(
-            domain={'y': [0, 0.4]}, 
+                         marker={'color': 'gray', 'size': size}, mode='markers',
+                         selected={'marker': {'color': 'firebrick'}},
+                         unselected={'marker': {'opacity': 0.3}}), go.Parcats(
+            domain={'y': [0, 0.4]},
             dimensions=dimensions,
             line={'colorscale': colorscale, 'cmin': 0,
-                'cmax': 1, 'color': color})
-        ])
+                  'cmax': 1, 'color': color})
+              ])
 
     fig.update_layout(
-            height=800, xaxis={'title': 'Employment'},
-            yaxis={'title': 'Health', 'domain': [0.6, 1]},
-            dragmode='lasso', hovermode='closest',
-            paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)')
+        height=800, xaxis={'title': 'Employment'},
+        yaxis={'title': 'Health', 'domain': [0.6, 1]},
+        dragmode='lasso', hovermode='closest',
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)')
 
     # Update color callback
     def update_color(trace, points, state):
@@ -375,7 +315,46 @@ def bubble_linked(city):
     return fig
 
 
+@app.callback(Output('heatmap', 'figure'),
+              Input('url', 'href'))
+def update_heatmap(_):
+    x = temperature_df['City'].unique()
+    y = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    z = [[round(temperature_df.loc[(temperature_df['City'] == temperature_df['City'].unique()[j]) \
+                                   & (temperature_df['Month'] == i), 'AvgTemperature'].values[0], 1)
+          for j in range(len(x))] for i in range(1, len(y) + 1)]
+
+    hovertext = list()
+    for xi, xx in enumerate(x):
+        hovertext.append(list())
+        for yi, yy in enumerate(y):
+            hovertext[-1].append('City: {}<br />Month: {}<br />Temperature: {}'.format(xx, yy, z[yi][xi]))
+
+    data = [go.Heatmap(x=temperature_df['Month'],
+                       y=temperature_df['City'],
+                       z=temperature_df['AvgTemperature'].values.tolist(), zmin=-20, zmax=40,
+                       colorscale='RdBu',
+                       reversescale=True,
+                       hoverinfo='text',
+                       colorbar=dict(thickness=10),
+                       text=hovertext)]
+
+    layout = go.Layout(title='Avg. Temperature by City and Month',
+                       xaxis=dict(
+                           tickmode='array',
+                           tickvals=[i for i in range(1, 13)],
+                           ticktext=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']),
+                       )
+
+    fig = go.Figure(data=data, layout=layout)
+
+    return fig
+
+
 hovered_location = ""
+
 
 @app.callback(Output('hovered_location', "style"),
               Output('radar', 'figure'),
@@ -399,6 +378,69 @@ def update_hovered_location(hoverData):
         style = {'display': 'none'}
 
     return style, update_radar(location), location
+
+
+# radar plot to compare index values
+def update_radar(city):
+    # creating a subset dataframe
+    df = data[['City', 'Cost of Living Index',
+               'Purchasing Power Index', 'Safety Index', 'Health Care Index',
+               'Pollution Index']]
+
+    # categories
+    cat = df.columns[1:].tolist()
+
+    select_df = df[df['City'] == city]
+
+    Row_list = []
+    r = []
+    # Iterate over each row
+    for index, rows in select_df.iterrows():
+        for i in range(len(cat)):
+            # Create list for the current
+            r.append(rows[cat[i]])
+
+            # append the list to the final list
+        Row_list.append(r)
+        Row_list = list(np.concatenate(Row_list).flat)
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Barpolar(
+        r=Row_list,
+        theta=cat,
+        name='',
+        marker_color=['rgb(243,203,70)'] * 6,
+        marker_line_color='white',
+        hoverinfo=['theta'] * 9,
+        opacity=0.7,
+        base=0
+    ))
+
+    fig.add_trace(go.Barpolar(
+        r=df.mean(axis=0).tolist(),
+        theta=cat,
+        name='',
+        marker_color=['#d1d1cf'] * 6,
+        marker_line_color='white',
+        hoverinfo=['theta'] * 9,
+        opacity=0.7,
+        base=0
+    ))
+
+    fig.update_layout(
+        title='',
+        font_size=12,
+        polar=dict(
+            bgcolor='rgba(0,0,0,0)',
+            angularaxis=dict(linewidth=3, showline=False, showticklabels=True),
+            radialaxis=dict(showline=False,
+                            showticklabels=False,
+                            linewidth=2,
+                            gridcolor='white',
+                            gridwidth=2)))
+
+    return fig
 
 
 @app.callback(Output('page-content', 'style'),
@@ -465,17 +507,17 @@ def update_map(filter_list, width, height):
                     accesstoken=mapbox_token,
                     ),
         legend=dict(
-                    bgcolor="rgba(51,51,51,0.6)",
-                    yanchor="top",
-                    y=0.35,
-                    xanchor="left",
-                    x=0,
-                    font=dict(
-                                family="Open Sans",
-                                size=15,
-                                color="white",
-                            ),
-                    ),
+            bgcolor="rgba(51,51,51,0.6)",
+            yanchor="top",
+            y=0.35,
+            xanchor="left",
+            x=0,
+            font=dict(
+                family="Open Sans",
+                size=15,
+                color="white",
+            ),
+        ),
         autosize=False,
         width=width,
         height=height,
