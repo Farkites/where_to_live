@@ -89,8 +89,8 @@ def custom_dims_plot(location, dims_selected, city_info_num, city_info_num_agg, 
             opacity=0.7
         )
 
-        fig.add_trace(trace1, row=idx + 1, col=1)
         fig.add_trace(trace2, row=idx + 1, col=1)
+        fig.add_trace(trace1, row=idx + 1, col=1)
 
     fig.update_layout(
         barmode='overlay',  # overlay, group

@@ -89,10 +89,13 @@ initial_popup_layout = html.Div([
         ]),
         html.Div([
             html.H6("Sources:"),
+            html.P("https://www.kaggle.com/stephenofarrell/cost-of-living", className="source"),
             html.P("https://www.economist.com/big-mac-index", className="source"),
             html.P("https://worldhappiness.report/", className="source"),
             html.P("https://www.nestpick.com/millennial-city-ranking-2018/", className="source"),
             html.P("https://www.numbeo.com/quality-of-life/rankings.jsp", className="source"),
+            html.P("https://www.kaggle.com/sudalairajkumar/daily-temperature-of-major-cities", className="source"),
+            html.P("https://simplemaps.com/data/world-cities", className="source"),
         ])
     ],
         style={"display": "flex", "align": "right", "bottom": "10%"}
@@ -249,8 +252,8 @@ def update_bubble_selection(click_map):
               [Input('map', 'clickData')],
               Input('x_close_selection', 'n_clicks'),
               [Input('filters_drop', 'value')],
-              [Input('bubble', 'selectedData')],
-              [Input('bubble', 'clickData')],
+              [Input('bubble', 'selectedData'),
+              Input('bubble', 'clickData')],
               Input('width', 'n_clicks'),
               Input('height', 'n_clicks'),
               [State('bubble', 'figure')])
@@ -259,6 +262,7 @@ def update_selected_location(clickData, n_clicks, dims_selected, bubbleSelect, b
     global selected_location
     global x_close_selection_clicks
     location = ""
+
     if clickData is not None or dims_selected is not None:
         if clickData is not None:
             location = clickData['points'][0]['text']
@@ -270,8 +274,6 @@ def update_selected_location(clickData, n_clicks, dims_selected, bubbleSelect, b
             location = selected_location
             style = {'display': 'none'}
     else:
-        selected_location = ""
-        location = ""
         style = {'display': 'none'}
 
     if n_clicks != x_close_selection_clicks:
