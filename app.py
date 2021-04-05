@@ -276,7 +276,7 @@ def update_selected_location(clickData, n_clicks, dims_selected,bubbleSelect,bub
 
 
 def update_custom_dims_plot(location, dims_selected):
-    if dims_selected is None:
+    if dims_selected is None or len(dims_selected) == 0:
         dims_selected = ['tourism']
     if len(location) == 0:
         return go.Figure()
