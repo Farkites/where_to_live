@@ -11,10 +11,9 @@ from ipywidgets import widgets
 ##################################################################################################
 
 # datasets needed for plots
-data = pd.read_csv('df_outer_full.csv')
+data = pd.read_csv('df_final.csv')
 
-
-country_options = data['Country'].tolist()
+city_options = data['City'].tolist()
 
 app = dash.Dash()
 
@@ -23,26 +22,26 @@ app.layout = html.Div([
     html.Div(
         [
             dcc.Dropdown(
-                id="Country",
+                id="City",
                 options=[{
                     'label': i,
                     'value': i
-                } for i in country_options],
-                value='All countries'
+                } for i in city_options],
+                value='All cities'
                 #multi=True
                 )
         ],
         style={'width': '25%',
                'display': 'inline-block'}),
-    dcc.Graph(id='funnel-graph'),
+    #dcc.Graph(id='funnel-graph'),
     dcc.Graph(id='radar'),
     dcc.Graph(id='bubble')
 ])
 
 # plotting age groups for each country
-@app.callback(
-    dash.dependencies.Output('funnel-graph', 'figure'),
-    [dash.dependencies.Input('Country', 'value')])
+#@app.callback(
+    #dash.dependencies.Output('funnel-graph', 'figure'),
+    #[dash.dependencies.Input('Country', 'value')])
 
 def update_demo(Country):
     if Country == "All Countries":
@@ -67,20 +66,17 @@ def update_demo(Country):
 
 @app.callback(
     dash.dependencies.Output('radar', 'figure'),
-    [dash.dependencies.Input('Country', 'value')])
+    [dash.dependencies.Input('City', 'value')])
 
 # radar plot to compare index values
 def update_radar(city):
     # creating a subset dataframe
-    df = data['City','Cost of Living Index',
+    df = data[['City','Cost of Living Index',
        'Purchasing Power Index', 'Safety Index', 'Health Care Index',
-       'Pollution Index']
+       'Pollution Index']]
 
     # categories
     cat = df.columns[1:].tolist()
-
-    df.set_index('City')
-    df=pd.melt(df, id_vars='City', value_vars=cat)
 
     select_df = df[df['City'] == city]
 
@@ -137,12 +133,12 @@ def update_radar(city):
 
 @app.callback(
     dash.dependencies.Output('bubble', 'figure'),
-    [dash.dependencies.Input('Country', 'value')])
+    [dash.dependencies.Input('City', 'value')])
 
 # bubble plot for happiness and related indicators
 def bubble_linked(city):
     md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
-       'Transport', 'Health', 'Food', 'Internet Speed', 'Apple Store',
+       'Transport', 'Health', 'Food', 'Internet Speed',
        'Access to Contraception', 'Gender Equality', 'Immigration Tolerance',
        'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']]
     

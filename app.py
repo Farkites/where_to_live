@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from dash.dependencies import ClientsideFunction, Input, Output, State
 import plotly.express as px
+from ipywidgets import widgets
 
 import urllib.request, json
 
@@ -19,9 +20,9 @@ filters = [dict(label=parameter, value=parameter) for parameter in preferences_l
 
 
 # datasets needed for plots
-data = pd.read_csv('age_group.csv')
-index_df = pd.read_csv('Index.csv')
-com = pd.read_csv('col.csv')
+data = pd.read_csv('df_final.csv')
+
+
 
 filters_layout = html.Div([
     html.Div([
@@ -206,7 +207,6 @@ x_close_selection_clicks = -1
 
 @app.callback(Output('selected_location', "style"),
               Output('title_selected_location', "children"),
-              Output('funnel-graph', "figure"),
               Output('radar', "figure"),
               [Input('map', 'clickData')],
               Input('x_close_selection', 'n_clicks'))
@@ -232,101 +232,127 @@ def update_selected_location(clickData, n_clicks):
         style = {'display': 'none'}
         x_close_selection_clicks = n_clicks
 
-    return style, location, update_demo(location), update_radar(location)#, bubble_happiness(location)
+    return style, location, update_radar(location)#, bubble_linked(location) 
 
-
-def update_demo(Country):
-    if Country == "All Countries":
-        df_plot = data.copy()
-    else:
-        df_plot = data[data['Country'] == Country]
-
-    trace1 = go.Bar(x=df_plot.Country, y=df_plot['Under 5'], name='Under 5')
-    trace2 = go.Bar(x=df_plot.Country, y=df_plot['Aged 5-14'], name='Aged 5-14')
-    trace3 = go.Bar(x=df_plot.Country, y=df_plot['Aged 15-24'], name='Aged 15-24')
-    trace4 = go.Bar(x=df_plot.Country, y=df_plot['Aged 25-64'], name='Aged 25-64')
-    trace5 = go.Bar(x=df_plot.Country, y=df_plot['Over 65'], name='Over 65')
-
-    return {
-        'data': [trace1, trace2, trace3, trace4, trace5],
-        'layout':
-            go.Layout(
-                title='Age demographics for {}'.format(Country),
-                orientation=180,
-                barmode='stack',
-                #margin=go.layout.Margin(
-                #    l=0,  # left margin
-                #    r=0,  # right margin
-                #    b=0,  # bottom margin
-                #    t=0  # top margin
-                #),
-                width=350,
-                height=300,
-            ),
-
-    }
 
 
 # radar plot to compare index values
-def update_radar(Country):
+def update_radar(city):
     # creating a subset dataframe
+    df = data[['City','Cost of Living Index',
+       'Purchasing Power Index', 'Safety Index', 'Health Care Index',
+       'Pollution Index']]
 
-    # select from:
-    # Quality of Life Index, Purchasing Power Index, Safety Index, Health Care Index,
-    # Cost of Living Index, Property Price to Income Ratio,	Traffic Commute Time Index
-    # Pollution Index, Climate Index
-    selected = index_df[
-        ['Country', 'Safety Index', 'Health Care Index', 'Cost of Living Index', 'Climate Index', 'Pollution Index']]
+    # categories
+    cat = df.columns[1:].tolist()
+
+    select_df = df[df['City'] == city]
 
     Row_list = []
-
-    # get list of values for each country selected
+    r=[]
     # Iterate over each row
-    for index, row in selected.iterrows():
-        # Create list for the current
-        r = [row['Safety Index'], row['Health Care Index'], row['Cost of Living Index'], row['Climate Index'],
-             row['Pollution Index']]
+    for index, rows in select_df.iterrows():
+        for i in range(len(cat)):
+            # Create list for the current 
+            r.append(rows[cat[i]])
 
-        # append the list to the final list
+            # append the list to the final list
         Row_list.append(r)
+        Row_list=list(np.concatenate(Row_list).flat)
+    
+    fig = go.Figure()
 
-    # list of attributes to be compared
-    categories = ['Safety Index', 'Health Care Index', 'Cost of Living Index', 'Climate Index', 'Pollution Index']
-    categories = [*categories, categories[0]]
+    fig.add_trace(go.Barpolar(
+        r=Row_list,
+        theta=cat,
+        name='',
+        marker_color=['rgb(243,203,70)']*6,
+        marker_line_color='white',
+        hoverinfo=['theta']*9,
+        opacity=0.7,
+        base=0
+    ))
 
-    country_1 = Row_list[0]
-    country_2 = Row_list[1]
-    country_3 = Row_list[2]
-    country_1 = [*country_1, country_1[0]]
-    country_2 = [*country_2, country_2[0]]
-    country_3 = [*country_3, country_3[0]]
+    fig.add_trace(go.Barpolar(
+        r=df.mean(axis=0).tolist(),
+        theta=cat,
+        name='',
+        marker_color=['#d1d1cf']*6,
+        marker_line_color='white',
+        hoverinfo=['theta']*9,
+        opacity=0.7,
+        base=0
+    ))
 
-    return go.Figure(
-        data=[
-            go.Scatterpolar(r=country_1, theta=categories, fill='toself', name='Country 1'),
-            # go.Scatterpolar(r=country_2, theta=categories, fill='toself', name='Country 2'),
-            # go.Scatterpolar(r=country_3, theta=categories, fill='toself', name='Country 3')
-        ],
-        layout=go.Layout(
-            title=go.layout.Title(text='Country'),
-            polar={'radialaxis': {'visible': True}},
-            showlegend=True,
-            #margin=go.layout.Margin(
-            #    l=0,  # left margin
-            #    r=0,  # right margin
-            #    b=0,  # bottom margin
-            #    t=0  # top margin
-            #),
-            width=350,
-            height=300,
-        )
-    )
+    fig.update_layout(
+        title='',
+        font_size=12,
+        polar=dict(
+        bgcolor='rgba(0,0,0,0)',
+        angularaxis=dict(linewidth=3, showline=False,showticklabels=True),
+        radialaxis=dict(showline=False,
+                        showticklabels=False,
+                linewidth=2,
+                gridcolor='white',
+                gridwidth=2)))
+
+    return fig
+
+def bubble_linked(city):
+    md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
+       'Transport', 'Health', 'Food', 'Internet Speed',
+       'Access to Contraception', 'Gender Equality', 'Immigration Tolerance',
+       'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']]
+    
+    for column in md.columns.tolist()[1:]:
+        md['{column}_q'.format(column=column)] = pd.qcut(md[column].rank(method='first'), 4, labels=False)
+
+    # Build parcats dimensions
+    quartiles = ['Startup_q', 'Internet Speed_q', 'Gender Equality_q','Immigration Tolerance_q','LGBT Friendly_q','Nightscene_q',]
 
 
-def bubble_happiness(Country):
-    return px.scatter(com, x="Logged GDP per capita", y="Healthy life expectancy",
-                      size="population", color="Ladder score",
-                      hover_name='Country name', log_x=True, size_max=60)
+    dimensions = [dict(values=md[label], label=label) for label in quartiles]
+
+    # Build colorscale
+    color = np.zeros(len(md), dtype='uint8')
+    colorscale = [[0, 'gray'], [1, 'firebrick']]
+
+    size = md['Employment']*10
+    # Build figure as FigureWidget
+    fig = go.FigureWidget(
+        data=[go.Scatter(x=md['Food'], y=md['Health'],
+        marker={'color': 'gray','size':size}, mode='markers', selected={'marker': {'color': 'firebrick'}},
+        unselected={'marker': {'opacity': 0.3}}), go.Parcats(
+            domain={'y': [0, 0.4]}, 
+            dimensions=dimensions,
+            line={'colorscale': colorscale, 'cmin': 0,
+                'cmax': 1, 'color': color})
+        ])
+
+    fig.update_layout(
+            height=800, xaxis={'title': 'Employment'},
+            yaxis={'title': 'Health', 'domain': [0.6, 1]},
+            dragmode='lasso', hovermode='closest',
+            paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)')
+
+    # Update color callback
+    def update_color(trace, points, state):
+        # Update scatter selection
+        fig.data[0].selectedpoints = points.point_inds
+
+        # Update parcats colors
+        new_color = np.zeros(len(md), dtype='uint8')
+        new_color[points.point_inds] = 1
+        fig.data[1].line.color = new_color
+
+    # Register callback on scatter selection...
+    fig.data[0].on_selection(update_color)
+    # and parcats click
+    fig.data[1].on_click(update_color)
+
+    return fig
+
 
 
 hovered_location = ""
