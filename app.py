@@ -131,7 +131,7 @@ selected_location_layout = html.Div([
     html.Div([
         html.Div([
             html.H4("... Common indices and Quartiles analysis"),
-            html.H6("Bubble size is GDP per capita"),
+            html.H6("Bubble size is GDP per capita. Brush to highlight cities."),
             dcc.Graph(id='bubble'),
         ],
             className="plot_container_child",
@@ -571,12 +571,14 @@ color = np.zeros(len(md), dtype='uint8')
 colorscale = [[0, 'gray'], [1, 'rgb(243,203,70)']]
 
 
-size = 10 ** (md['Logged GDP per capita'] / 10)
-size = size.round(5)
+gdp = 10 ** (md['Logged GDP per capita'] / 10)
+
+sizeref = 2. * max(gdp) / (20 ** 2)
+
 customdata=np.stack(
   (pd.Series(md.index),
    md['City'],
-   size*1000),
+   gdp.round(5)*1000),
   axis=-1
 )
 
@@ -590,7 +592,7 @@ def build_bubble_figure(width, height):
         hovertemplate="""<extra></extra>
         <em>%{customdata[1]}</em><br>
         GDP per capita = %{customdata[2]} €""",
-        marker={'color': '#986EA8', 'size': size}, mode='markers', selected={'marker': {'color': 'rgb(243,203,70)'}},
+        marker={'color': '#986EA8', 'sizeref': sizeref, 'sizemin': .005, 'sizemode': 'area', 'size': gdp}, mode='markers', selected={'marker': {'color': 'rgb(243,203,70)'}},
         unselected={'marker': {'opacity': 0.3}}), go.Parcats(
             domain={'y': [0, 0.4]},
 

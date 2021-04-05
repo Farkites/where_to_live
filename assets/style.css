@@ -318,6 +318,9 @@ button { /* Style of the buttons*/
 .plots_container{
     display: flex;
 }
+.plots_container H4{
+    left-margin: 25 px;
+}
 .plots_container_child:first-child {
     margin-right: 20px;
     width: 66% !important;
