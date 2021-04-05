@@ -225,6 +225,13 @@ selected_location = ""
 x_close_selection_clicks = -1
 
 
+@app.callback(Output('bubble','clickData'),
+                [Input('map', 'clickData')])
+def link_data(clickData):
+    if clickData is not None:
+            location = clickData['points'][0]['text']
+    ###### 
+
 @app.callback(Output('selected_location', "style"),
               Output('title_selected_location', "children"),
               Output('custom_dims_plot', "figure"),
@@ -235,6 +242,7 @@ x_close_selection_clicks = -1
               [Input('bubble', 'selectedData'),
                 Input('bubble', 'clickData')],
                 [State('bubble','figure')])
+
 def update_selected_location(clickData, n_clicks, dims_selected,bubbleSelect,bubbleClick,bubbleState):
     global selected_location
     global x_close_selection_clicks
@@ -389,8 +397,8 @@ def update_radar(city):
 
     fig.update_layout(
         title='',
-        font_size=18,
-
+        font_size=12,
+        #hoverlabel = 
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font_color="white",
@@ -499,10 +507,11 @@ md = data[['City', 'Employment', 'Startup', 'Tourism', 'Housing',
        'LGBT Friendly', 'Nightscene', 'Beer', 'Festival']].copy()
     
 for column in md.columns.tolist()[1:]:
-    md['{column}_q'.format(column=column)] = pd.qcut(md[column].rank(method='first'), 4, labels=False)
+    md['{column}.'.format(column=column)] = pd.qcut(md[column].rank(method='first'), 4, labels=False)
+
 
 # Build parcats dimensions
-quartiles = ['Startup_q', 'Internet Speed_q', 'Gender Equality_q','Immigration Tolerance_q','LGBT Friendly_q','Nightscene_q',]
+quartiles = ['Startup.', 'Internet Speed.', 'Gender Equality.','Immigration Tolerance.','LGBT Friendly.','Nightscene.',]
 
 
 dimensions = [dict(values=md[label], label=label) for label in quartiles]
@@ -511,15 +520,18 @@ dimensions = [dict(values=md[label], label=label) for label in quartiles]
 color = np.zeros(len(md), dtype='uint8')
 colorscale = [[0, 'gray'], [1, 'rgb(243,203,70)']]
 
-size = md['Employment']*30
+size = md['Employment']*20
+
 
 # bubble plot related indicators
 def build_figure():
-    
+
     # Build figure as FigureWidget
     fig = go.Figure(
-        data=[go.Scatter(x=md['Food'], y=md['Health'],
-        marker={'color': 'gray','size':size}, mode='markers', selected={'marker': {'color': 'rgb(243,203,70)'}},
+        data=[go.Scatter(x=md['Health'], y=md['Housing'],
+        text=md['City'],
+        hovertemplate=md['City'], 
+        marker={'color': '#986EA8','size':size}, mode='markers', selected={'marker': {'color': 'rgb(243,203,70)'}},
         unselected={'marker': {'opacity': 0.3}}), go.Parcats(
             domain={'y': [0, 0.4]}, 
             dimensions=dimensions,
@@ -528,6 +540,7 @@ def build_figure():
         ])
 
     fig.update_layout(
+            font_color='white',
             height=800, xaxis={'title': 'Employment'},
             yaxis={'title': 'Health', 'domain': [0.6, 1]},
             dragmode='lasso', hovermode='closest',
