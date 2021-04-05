@@ -11,16 +11,6 @@ from helper.plots import custom_dims_plot
 
 import urllib.request, json
 
-city_info_bin = pd.read_csv('data_bool_geo_final.csv')
-preferences_list = list(city_info_bin.drop(columns=["City", "Country", "Lat", "Long"]).columns)
-filters = [dict(label=parameter, value=parameter) for parameter in preferences_list]
-
-temperature_df = pd.read_csv('city_temperature.csv')
-
-# datasets needed for plots
-data = pd.read_csv('df_final.csv')
-city_info_num = data.copy()
-
 # name mapper
 with open('mapping_dict_final_binary.json', 'r') as f:
     dimension_mapper_binary = json.load(f)
@@ -28,7 +18,17 @@ with open('mapping_dict_final_binary.json', 'r') as f:
 with open('mapping_dict_final.json', 'r') as f:
     dimension_mapper = json.load(f)
 
-    print('dimension_mapper: ', dimension_mapper)
+city_info_bin = pd.read_csv('data_bool_geo_final.csv')
+
+filters = []
+for k,v in dimension_mapper_binary.items():
+    filters.append(dict(label=v, value=k))
+
+temperature_df = pd.read_csv('city_temperature.csv')
+
+# datasets needed for plots
+data = pd.read_csv('df_final.csv')
+city_info_num = data.copy()
 
 colnames_to_lower = dict(zip(
     city_info_num.drop(columns=["City", "Country", "Lat", "Long"]).columns,
