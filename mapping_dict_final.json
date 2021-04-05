@@ -1,0 +1,192 @@
+{
+    "mcmeal at mcdonalds (or equivalent combo meal)": [
+        "price for a mcmeal",
+        "high",
+        "low"
+    ],
+    "domestic beer (0.5 liter draught)": [
+        "price for a pint",
+        "high",
+        "low"
+    ],
+    "water (1.5 liter bottle)": [
+        "price for a water",
+        "high",
+        "low"
+    ],
+    "cappuccino (regular)": [
+        "price for a cappuccino",
+        "high",
+        "low"
+    ],
+    "apartment (1 bedroom) in city centre": [
+        "price for a city apartment",
+        "high",
+        "low"
+    ],
+    "apartment (1 bedroom) outside of centre": [
+        "price for an urban apartment ",
+        "high",
+        "low"
+    ],
+    "basic (electricity, heating, cooling, water, garbage) for 85m2 apartment": [
+        "price for utilites ",
+        "high",
+        "low"
+    ],
+    "internet (60 mbps or more, unlimited data, cable/adsl)": [
+        "price for internet",
+        "high",
+        "low"
+    ],
+    "fitness club, monthly fee for 1 adult": [
+        "price for fitness club",
+        "high",
+        "low"
+    ],
+    "average monthly net salary (after tax)": [
+        "monthly salary",
+        "high",
+        "low"
+    ],
+    "cost of living index": [
+        "cost of living",
+        "high",
+        "low"
+    ],
+    "purchasing power index": [
+        "purchasing power",
+        "high",
+        "low"
+    ],
+    "safety index": [
+        "safety",
+        "high",
+        "low"
+    ],
+    "health care index": [
+        "health care",
+        "good",
+        "bad"
+    ],
+    "pollution index": [
+        "pollution",
+        "heavy",
+        "little"
+    ],
+    "logged gdp per capita": [
+        "gdp per capita",
+        "high",
+        "low"
+    ],
+    "social support": [
+        "social support",
+        "good",
+        "bad"
+    ],
+    "healthy life expectancy": [
+        "healthy life expectancy",
+        "high",
+        "low"
+    ],
+    "freedom to make life choices": [
+        "reedom to make life choices",
+        "high",
+        "low"
+    ],
+    "generosity": [
+        "generosity",
+        "high",
+        "low"
+    ],
+    "perceptions of corruption": [
+        "perceptions of corruption",
+        "high",
+        "low"
+    ],
+    "population": [
+        "population",
+        "big",
+        "small"
+    ],
+    "employment": [
+        "employment",
+        "high",
+        "low"
+    ],
+    "startup": [
+        "startup scene",
+        "good",
+        "bad"
+    ],
+    "tourism": [
+        "tourism",
+        "much",
+        "little"
+    ],
+    "housing": [
+        "housing situation",
+        "good",
+        "bad"
+    ],
+    "transport": [
+        "transport infrastructure",
+        "good",
+        "bad"
+    ],
+    "health": [
+        "health system",
+        "good",
+        "bad"
+    ],
+    "food": [
+        "food supply",
+        "good",
+        "bad"
+    ],
+    "internet speed": [
+        "internet speed",
+        "good",
+        "bad"
+    ],
+    "access to contraception": [
+        "access to contraception",
+        "good",
+        "bad"
+    ],
+    "gender equality": [
+        "gender equality",
+        "good",
+        "bad"
+    ],
+    "immigration tolerance": [
+        "immigration tolerance",
+        "good",
+        "bad"
+    ],
+    "lgbt friendly": [
+        "lgbt friendly",
+        "",
+        "not"
+    ],
+    "nightscene": [
+        "nightscene",
+        "good",
+        "bad"
+    ],
+    "beer": [
+        "beer price indicator",
+        "high",
+        "low"
+    ],
+    "festival": [
+        "festival scence",
+        "good",
+        "weak"
+    ],
+    "avgtemperature": [
+        "avg temperature",
+        "high",
+        "low"
+    ]
+}
